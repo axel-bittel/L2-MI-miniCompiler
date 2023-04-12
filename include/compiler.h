@@ -50,14 +50,12 @@ void	print_tree(t_tree	*tree, int i);
 t_node	*create_new_node(int	type, void	*data);
 t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data);
 
-#define TYPE_VAR		0 	//ID VAR
-#define TYPE_ARG		2	//ID ARG
-#define TYPE_FUNCTION	1	//ID FUNCTION
+#define TYPE_VAR			0 	//ID VAR
+#define TYPE_FUNCTION		1	//ID FUNCTION
+#define TYPE_ARG			2	//ID ARG
 
-#define TYPE_INT		0	
-#define TYPE_FLOAT		1	
-#define TYPE_BOOL		3	
-#define TYPE_PTR		4	
+#define TYPE_INT			0	//VAR TYPE INT
+#define TYPE_TAB_INT		1	//VAR TYPE INT[]
 
 //SYMBOL TABLE
 typedef	struct	s_symbol_table_elem
@@ -67,7 +65,6 @@ typedef	struct	s_symbol_table_elem
 	char	type;
 	short 	nb_args;
 	int		line_declaration;
-	unsigned long	long int	offset;
 	struct s_symbol_table_elem*	next;
 }				t_symbol_table_elem;
 
@@ -79,11 +76,18 @@ typedef	struct	s_symbol_table_elem
 typedef	struct	s_symbol_table
 {
 	int					size;
-	int					type;
+	char				type;
 	t_symbol_table_elem		*begin;
 	t_symbol_table_elem		*end;
 }				t_symbol_table;
 
+typedef struct stack_symbol_table
+{
+	struct stack_symbol_table	*next;
+}				t_stack_symbol_table;
+
+
+// Program structure
 typedef	struct	s_data
 {
 	t_symbol_table	**table;
