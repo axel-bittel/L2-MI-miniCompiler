@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include "ft_tree/ft_tree.h"
+#include "ft_tree.h"
 
 #define COND_NODE			19	//NODE FOR BEGIN CONDITION
 #define IF_NODE 			0	//NODE FOR IF
@@ -76,16 +76,16 @@ typedef	struct	s_symbol_table_elem
 typedef	struct	s_symbol_table
 {
 	int					size;
-	char				type;
+	char				type_table;
 	t_symbol_table_elem		*begin;
 	t_symbol_table_elem		*end;
 }				t_symbol_table;
 
 typedef struct stack_symbol_table
 {
+	t_symbol_table	*table;
 	struct stack_symbol_table	*next;
 }				t_stack_symbol_table;
-
 
 // Program structure
 typedef	struct	s_data
