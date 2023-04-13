@@ -33,3 +33,17 @@ void free_stack(t_stack_symbol_table *stack)
     while (stack)
         pop_stack_symbol_table(&stack);
 }
+
+t_symbol_table_element *find_element_by_id_stack(t_stack_symbol_table *stack, char *id)
+{
+    t_symbol_table_element *elem;
+
+    while (stack)
+    {
+        elem = find_element_by_id(stack->table, id);
+        if (elem)
+            return (elem);
+        stack = stack->next;
+    }
+    return (NULL);
+}

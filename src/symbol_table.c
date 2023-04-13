@@ -60,3 +60,17 @@ void    free_symbol_table(t_symbol_table* table)
     }
     free(table);
 }
+
+t_symbol_table_element  *find_element_by_id(char *id, t_symbol_table *table)
+{
+    t_symbol_table_element *act_elem;
+
+    act_elem = table->begin;
+    while (act_elem)
+    {
+        if (strcmp(act_elem->name, id) == 0)
+            return (act_elem);
+        act_elem = act_elem->next;
+    }
+    return (NULL);
+}
