@@ -2,54 +2,53 @@
 
 t_symbol_table *create_symbol_table(char type_table)
 {
-    t_symbol_table *t_symbol_table;
-    t_symbol_table = (t_symbol_table *)malloc(sizeof(t_symbol_table));
+    t_symbol_table *table;
+    table = (t_symbol_table *)malloc(sizeof(t_symbol_table));
 
-    t_symbol_table->size = 0;
-    t_symbol_table->begin = NULL;
-    t_symbol_table->end = NULL;
-    t_symbol_table->type_table = type_table;
+    table->size = 0;
+    table->begin = NULL;
+    table->end = NULL;
+    table->type_table = type_table;
 
-    return (t_symbol_table);
+    return (table);
 }
 
-t_symbol_table_element  *create_symbol_table_element(char *name, char type char type_symbol, short nb_args = 0)
+t_symbol_table_elem  *create_symbol_table_element(char *name, char type, char type_symbol, short nb_args)
 {
-    t_symbol_table_element *t_symbol_table_element;
+    t_symbol_table_elem* elem;
 
-    t_symbol_table_element = (t_symbol_table_element *)malloc(sizeof(t_symbol_table_element));
-    t_symbol_table_element->name = name;
-    t_symbol_table_element->type = type;
-    t_symbol_table_element->type_symbol = type_symbol;
-    t_symbol_table_element->value = value;
-    t_symbol_table_element->nb_args = nb_args;
-    t_symbol_table_element->line_declaration = -1;
-    t_symbol_table_element->next = NULL;
+    elem = (t_symbol_table_elem *)malloc(sizeof(elem));
+    elem->name = name;
+    elem->type = type;
+    elem->type_symbol = type_symbol;
+    elem->nb_args = nb_args;
+    elem->line_declaration = -1;
+    elem->next = NULL;
 
-    return (t_symbol_table_element);
+    return (elem);
 }
 
-int add_element_in_symbol_table(t_symbol_table *t_symbol_table, t_symbol_table_element *t_symbol_table_element)
+int add_element_in_symbol_table(t_symbol_table *table, t_symbol_table_elem *new_elem)
 {
-    t_symbol_table_element *tmp_elem;
+    t_symbol_table_elem *tmp_elem;
 
-    tmp_elem = t_symbol_table->begin;
-    if (!t_symbol_table)
+    tmp_elem = table->begin;
+    if (!table)
         return (-1);
-    if (tmp_elem == NULL)
-        t_symbol_table->begin = t_symbol_table_element;
-    else if (t_symbol_table_element->end == NULL)
-        t_symbol_table->end = t_symbol_table_element;
+    if (table->begin == NULL)
+        table->begin = new_elem;
+    else if (table->end == NULL)
+        table->end = new_elem;
     else
-        t_symbol_table->end->next = t_symbol_table_element;
+        table->end->next = new_elem;
 
     return (0);
 }
 
 void    free_symbol_table(t_symbol_table* table)
 {
-    t_symbol_table_element *act_elem;
-    t_symbol_table_element *next_elem;
+    t_symbol_table_elem *act_elem;
+    t_symbol_table_elem *next_elem;
 
     act_elem = table->begin;
     while (act_elem)
@@ -61,9 +60,9 @@ void    free_symbol_table(t_symbol_table* table)
     free(table);
 }
 
-t_symbol_table_element  *find_element_by_id(char *id, t_symbol_table *table)
+t_symbol_table_elem  *find_element_by_id(char *id, t_symbol_table *table)
 {
-    t_symbol_table_element *act_elem;
+    t_symbol_table_elem *act_elem;
 
     act_elem = table->begin;
     while (act_elem)
