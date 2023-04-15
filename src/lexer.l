@@ -1,9 +1,9 @@
 %{
+    #include <string.h>
 %}
-
 %%
 [ \t\n]+                { }
-[\/\**\*\/]             {}
+"/*"*"*/"             {}
 "extern"                { return EXTERN; }
 "int"                   { return INT; }
 "void"                  { return VOID; }
@@ -34,7 +34,13 @@
 "!"                     { return NOT; }
 "&"                     { return BAND; }
 "|"                     { return BOR; }
-[0-9]+                  { return CONSTANTE; }
-[a-zA-Z_][a-zA-Z0-9_]*  { return IDENTIFICATEUR; }
-.       { return yytext[0]; } 
+[0-9]+                  { 
+                            yylval = atoi(yytext);
+                            return CONSTANTE; 
+                        }
+[a-zA-Z_][a-zA-Z0-9_]*  { 
+                            yylval.id = strdup(yytext);
+                            return IDENTIFICATEUR; 
+                        }
+.                       { return yytext[0]; } 
 %%

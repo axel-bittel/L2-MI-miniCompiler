@@ -36,8 +36,8 @@ all			:	${NAME}
 lexer		:	
 				lex ${LEXER_FILE}
 parser		:	
-				yacc ${PARSER_FILE}
-				${CC} -c ${CFLAGS} ${FSFLAGS} ${HEADER} -o ./y.tab.o ./y.tab.c
+				bison ${PARSER_FILE}
+				${CC} -c ${CFLAGS} ${FSFLAGS} ${HEADER} -o ./y.tab.o ./miniC.tab.c
 
 clean :
 				@echo "~~~~~~~~~~ CLEAN ~~~~~~~~~~~~"

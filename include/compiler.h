@@ -35,15 +35,18 @@
 #define BOOL_OR_NODE		21  //NODE FOR ||
 #define BOOL_NEQ_NODE		34  //NODE FOR !=
 
-#define INSTRUCTION_NODE	22	//NODE FOR INSTRUCTION
-#define FUNCTION_NODE		23	//NODE FOR FUNCTION
+#define INSTRUCTION_NODE		22	//NODE FOR INSTRUCTION
+#define FUNCTION_NODE			23	//NODE FOR FUNCTION
+#define EXTERN_FUNCTION_NODE	37	//NODE FOR FUNCTION
+#define LIST_FUNCTION_NODE		36	//NODE FOR LIST_FUNCTION
 
 #define WHILE_NODE			24	//NODE FOR WHILE
 #define FOR_NODE			35	//NODE FOR FOR
 
-#define CONST_NODE			25	//NODE FOR CONST
-#define	VAR_NODE			26	//NODE FOR ID (VAR)
-#define	VAR_LIST_NODE		27	//NODE FOR DECLARATION OF ID (VAR)
+#define CONST_NODE				25	//NODE FOR CONST
+#define	VAR_DECLARATION_NODE	26	//NODE FOR ID DECLARATION (VAR)
+#define	VAR_NODE				37	//NODE FOR ID (VAR)
+#define	VAR_LIST_NODE			27	//NODE FOR DECLARATION OF ID (VAR)
 
 #define ARG_NODE			28	//NODE FOR ARGUMENT OF FUNCTION
 #define EXP_LIST_NODE		29	//NODE FOR LIST OF ARGUMENT OF FUNCTION
@@ -63,9 +66,10 @@ void	print_tree(t_tree	*tree, int i);
 t_node	*create_new_node(int	type, void	*data);
 t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data);
 
-#define TYPE_VAR			0 	//ID VAR
-#define TYPE_FUNCTION		1	//ID FUNCTION
-#define TYPE_ARG			2	//ID ARG
+#define TYPE_VAR				0 	//ID VAR
+#define TYPE_FUNCTION			1	//ID FUNCTION
+#define TYPE_ARG				2	//ID ARG
+#define TYPE_EXTERN_FUNCTION	3	//ID ARG
 
 #define TYPE_INT			0	//VAR TYPE INT
 #define TYPE_TAB_INT		1	//VAR TYPE INT[]
@@ -85,7 +89,7 @@ typedef	struct	s_symbol_table_elem
 #define SYMBOL_TYPE_GLOBAL		0
 #define SYMBOL_TYPE_FUNCTION	1
 #define SYMBOL_TYPE_ARG			2
-#define Symbol_TYPE_LOCAL		3
+#define SYMBOL_TYPE_LOCAL		3
 
 typedef	struct	s_symbol_table
 {
