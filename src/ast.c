@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "compiler.h"
-#include "ft_tree/ft_tree.h"
+#include "ft_tree.h"
 
 
 t_node	*create_new_node(int	type, void	*data)
