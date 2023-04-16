@@ -17,7 +17,7 @@ SRCS			=	${SRC_DIR}/ft_tree/ft_treeadd_f.c\
 					${SRC_DIR}/symbol_table.c\
 					${SRC_DIR}/stack_symbol_table.c\
 					${SRC_DIR}/syntaxic_analys_utils.c
-TESTS_FILES 	= 	${shell ExampleFiles/*.c}
+TESTS_FILES 	= 	${shell ls ExampleFiles/*.c}
 NAME			=	compiler
 
 HEADER		=	-I${INC_DIR} -I./
@@ -36,12 +36,12 @@ all			:	${NAME}
 lexer		:	
 				lex ${LEXER_FILE}
 parser		:	
-				bison ${PARSER_FILE}
+				yacc ${PARSER_FILE} -b "miniC"
 				${CC} -c ${CFLAGS} ${FSFLAGS} ${HEADER} -o ./y.tab.o ./miniC.tab.c
 
 clean :
 				@echo "~~~~~~~~~~ CLEAN ~~~~~~~~~~~~"
-				${RM}  ${OBJS} ./lex.yy.c ./y.tab.c ./y.tab.o
+				${RM}  ${OBJS} ./lex.yy.c miniC.tab.c ./y.tab.c ./y.tab.o
 
 fclean		:	clean
 				@echo "~~~~~~~~~~ FCLEAN ~~~~~~~~~~"

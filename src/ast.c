@@ -57,7 +57,7 @@ void	print_tree(t_tree	*tree, int i)
 	{
 		j = i;
 		while (j-- > 0)
-			printf("\t");
+			printf("  ");
 		printf("Gauche->");
 		print_tree(tree->f_a, i + 1);
 	}

@@ -1,9 +1,10 @@
 %{
     #include <string.h>
+    #include "compiler.h"
 %}
 %%
 [ \t\n]+                { }
-"/*"*"*/"             {}
+"/*"([^*]|(\*+[^*/]))*\*+"/"    {}
 "extern"                { return EXTERN; }
 "int"                   { return INT; }
 "void"                  { return VOID; }
@@ -35,7 +36,7 @@
 "&"                     { return BAND; }
 "|"                     { return BOR; }
 [0-9]+                  { 
-                            yylval = atoi(yytext);
+                            yylval.inttype = atoi(yytext);
                             return CONSTANTE; 
                         }
 [a-zA-Z_][a-zA-Z0-9_]*  { 
