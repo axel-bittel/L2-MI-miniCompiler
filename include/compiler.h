@@ -7,58 +7,51 @@
 #include <string.h>
 #include "ft_tree.h"
 
-#define COND_NODE			0	//NODE FOR BEGIN CONDITION
-#define IF_NODE 			1	//NODE FOR IF
-#define ELSEIF_NODE     	2	//NODE FOR ELSE IF
-#define ELSE_NODE		    3	//NODE FOR ELSE
-#define RETURN_NODE			4	//NODE FOR RETURN OF FUNCTION
-#define CALL_NODE			5	//NODE CALL FUNCTION
+#define COND_NODE                0   //NODE FOR BEGIN CONDITION
+#define IF_NODE                  1   //NODE FOR IF
+#define ELSEIF_NODE              2   //NODE FOR ELSE IF
+#define ELSE_NODE                3   //NODE FOR ELSE
+#define RETURN_NODE              4   //NODE FOR RETURN OF FUNCTION
+#define CALL_NODE                5   //NODE CALL FUNCTION
+#define ADD_NODE                 6   //NODE FOR ADDITION
+#define MINUS_NODE               7   //NODE FOR SUBSTRACTION
+#define MULT_NODE                8   //NODE FOR MULTIPLICATION
+#define DIV_NODE                 9   //NODE FOR DIVISION
+#define ASSIGN_NODE             10   //NODE FOR EQUALITY
+#define RSHIFT_NODE             11   //NODE FOR >>
+#define LSHIFT_NODE             12   //NODE FOR <<
+#define BAND_NODE               13   //NODE FOR &
+#define BOR_NODE                14   //NODE FOR |
+#define BOOL_EQ_NODE            15   //NODE FOR ==
+#define BOOL_L_NODE             16   //NODE FOR <
+#define BOOL_G_NODE             17   //NODE FOR >
+#define BOOL_LE_NODE            18   //NODE FOR <=
+#define BOOL_GE_NODE            19   //NODE FOR >=
+#define BOOL_AND_NODE           20   //NODE FOR &&
+#define BOOL_OR_NODE            21   //NODE FOR ||
+#define INSTRUCTION_NODE        22   //NODE FOR INSTRUCTION
+#define FUNCTION_NODE           23   //NODE FOR FUNCTION
+#define CONST_NODE              24   //NODE FOR CONST
+#define WHILE_NODE              25   //NODE FOR WHILE
+#define VAR_DECLARATION_NODE    26   //NODE FOR ID DECLARATION (VAR)
+#define VAR_LIST_NODE           27   //NODE FOR DECLARATION OF ID (VAR)
+#define ARG_NODE                28   //NODE FOR ARGUMENT OF FUNCTION
+#define EXP_LIST_NODE           29   //NODE FOR LIST OF ARGUMENT OF FUNCTION
+#define ROOT_NODE               30   //NODE FOR ROOT OF AST
+#define BLOCK_NODE              31   //NODE FOR BLOCK OF INSTRUCTION
+#define NOT_NODE                32   //NODE FOR !
+#define OPP_NODE                33   //NODE FOR -
+#define BOOL_NEQ_NODE           34   //NODE FOR !=
+#define FOR_NODE                35   //NODE FOR FOR
+#define LIST_FUNCTION_NODE      36   //NODE FOR LIST_FUNCTION
+#define EXTERN_FUNCTION_NODE    37   //NODE FOR FUNCTION
+#define BREAK_NODE              38   //NODE FOR BREAK
+#define SWITCH_NODE             39   //NODE FOR SWITCH
+#define CASE_NODE               40   //NODE FOR CASE
+#define DEFAULT_NODE            41   //NODE FOR DEFAULT
+#define VAR_NODE                42   //NODE FOR ID (VAR)
+#define BLOCK_FUN_NODE		    43   //NODE FOR BLOC FUNCTION
 
-#define ADD_NODE			6	//NODE FOR ADDITION
-#define MINUS_NODE	    	7	//NODE FOR SUBSTRACTION
-#define MULT_NODE		    8	//NODE FOR MULTIPLICATION
-#define DIV_NODE			9	//NODE FOR DIVISION
-#define ASSIGN_NODE			10	//NODE FOR EQUALITY
-#define RSHIFT_NODE			11	//NODE FOR >>
-#define LSHIFT_NODE			12	//NODE FOR <<
-#define BAND_NODE			13	//NODE FOR &
-#define BOR_NODE			14	//NODE FOR | 
-#define NOT_NODE			32	//NODE FOR !
-#define OPP_NODE			33	//NODE FOR -
-
-#define BOOL_EQ_NODE		15	//NODE FOR ==
-#define BOOL_L_NODE    		16	//NODE FOR <
-#define BOOL_G_NODE    		17	//NODE FOR >
-#define BOOL_LE_NODE		18	//NODE FOR <=
-#define BOOL_GE_NODE		19	//NODE FOR >=
-#define BOOL_AND_NODE		20  //NODE FOR &&
-#define BOOL_OR_NODE		21  //NODE FOR ||
-#define BOOL_NEQ_NODE		34  //NODE FOR !=
-
-#define INSTRUCTION_NODE		22	//NODE FOR INSTRUCTION
-#define FUNCTION_NODE			23	//NODE FOR FUNCTION
-#define EXTERN_FUNCTION_NODE	37	//NODE FOR FUNCTION
-#define LIST_FUNCTION_NODE		36	//NODE FOR LIST_FUNCTION
-
-#define WHILE_NODE			24	//NODE FOR WHILE
-#define FOR_NODE			35	//NODE FOR FOR
-
-#define CONST_NODE				25	//NODE FOR CONST
-#define	VAR_DECLARATION_NODE	26	//NODE FOR ID DECLARATION (VAR)
-#define	VAR_NODE				42	//NODE FOR ID (VAR)
-#define	VAR_LIST_NODE			27	//NODE FOR DECLARATION OF ID (VAR)
-
-#define ARG_NODE			28	//NODE FOR ARGUMENT OF FUNCTION
-#define EXP_LIST_NODE		29	//NODE FOR LIST OF ARGUMENT OF FUNCTION
-#define BLOCK_NODE			30	//NODE FOR BLOCK OF INSTRUCTION
-#define BLOCK_FUN_NODE		36	//NODE FOR BLOCK OF INSTRUCTION IN FUNCTION
-
-#define BREAK_NODE			38	//NODE FOR BREAK
-#define SWITCH_NODE			39	//NODE FOR SWITCH
-#define CASE_NODE			40	//NODE FOR CASE
-#define DEFAULT_NODE		41	//NODE FOR DEFAULT
-
-#define ROOT_NODE			31	//NODE FOR ROOT OF AST
 
 //AST
 typedef struct	s_node
