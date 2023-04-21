@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFT_H
-# define LIBFT_H
+#ifndef FT_TREE_H
+# define FT_TREE_H
 # include <stdlib.h>
 typedef struct s_tree
 {
