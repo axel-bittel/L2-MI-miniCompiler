@@ -27,7 +27,6 @@
 %%
 programme	:	
 		liste_declarations liste_fonctions 	{
-												printf("end = %p, begin= %p\n", $2, $1);
 												t_tree	*end =  create_parent_tree($1, $2, ROOT_NODE, NULL);
 												print_tree(end, 0);
 												$$ = end;
@@ -47,7 +46,6 @@ liste_fonctions	:
 		liste_fonctions fonction			{
 												t_tree *f1 = $1;
 												t_tree *f2 = $2;
-												printf("f1 = %p\nf2 = %p\n", f1, f2);
 												$$ = create_parent_tree(f1, f2, LIST_FUNCTION_NODE, NULL);
 											}	
 | 		fonction 							{ $$ = $1; }
@@ -75,11 +73,10 @@ declarateur	:
 													$$ = create_parent_tree(NULL, NULL, VAR_DECLARATION_NODE, dec);
 												
 												}
-	|	declarateur'[' CONSTANTE ']'		{	
-													t_declaration* dec = malloc(sizeof(t_declaration));
-													dec->type = TYPE_TAB_INT;
-													dec->name = yylval.id;
-													$$ = create_parent_tree(NULL, NULL, VAR_DECLARATION_NODE, dec);
+	|	declarateur'[' CONSTANTE ']'			{	
+													int	*constante = nalloc(sizeof(int));
+													*constante = yylval.inttype;
+													$$ = create_parent_tree(NULL, $1, VAR_DECLARATION_NODE, constante);
 												}
 ;
 fonction	:	
@@ -95,7 +92,6 @@ fonction	:
 																t_declaration	*fun = malloc(sizeof(t_declaration));
 																fun->name = yylval.id;
 																fun->type = $2;
-																printf("func = %p\n", $5);
 																$$ = create_parent_tree($5, NULL, EXTERN_FUNCTION_NODE, fun);
 															}
 ;
@@ -266,9 +262,9 @@ int main(int argc, char **argv)
 		#ifdef YYDEBUG
 			fprintf(stdout, "\n#compiler: compilation du fichier %s\n", argv[i]);
 		#endif
-		#ifdef YYDEBUG
-		yyparse();
-		#endif
+		t_tree *ast= yyparse();
+		create_symbol_tables(ast);
+		
 		fclose(yyin);
 	}
 	return 0;
