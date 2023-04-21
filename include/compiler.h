@@ -58,6 +58,7 @@ typedef struct	s_node
 {
 	char	type;
 	void	*datas;
+	t_stack_symbol_table	*table;
 }				t_node;
 
 void	print_tree(t_tree	*tree, int i);
@@ -108,13 +109,5 @@ typedef	struct	s_declaration
 	int	type;
 	char	*name;
 }				t_declaration;
-
-// Program structure
-typedef	struct	s_data
-{
-	t_symbol_table	**table;
-	t_tree			*ast;	
-	char			is_main;
-}				t_data;
 
 #endif
