@@ -25,19 +25,19 @@ LDFLAGS		=	-L${SRC_DIR}
 OBJS				=	${SRCS:.c=.o}
 %.o				:	%.c
 					@echo "~~~~~~~ MAKE PROJECT ~~~~~~~~"
-					${CC} -c ${CFLAGS} ${HEADER} ${FSFLAGS} -o $@ $<  
+					${CC} -c ${CFLAGS} ${HEADER} ${FSFLAGS} -o $@ $< -g
 
 ${NAME}			:	lexer parser ${OPARSER_GEN_FILE} ${OBJS}
 					@echo "~~~~~~~ COMPILATION ~~~~~~~~~"
-					${CC} ${LDFLAGS} ${CFLAGS} ${FSFLAGS} -o ${NAME} ${OBJS} ./y.tab.o -lfl
+					${CC} ${LDFLAGS} ${CFLAGS} ${FSFLAGS} -o ${NAME} ${OBJS} ./y.tab.o -lfl -g
 
 all			:	${NAME} 
 
 lexer		:	
 				lex ${LEXER_FILE}
 parser		:	
-				yacc ${PARSER_FILE} -b "miniC"
-				${CC} -c ${CFLAGS} ${FSFLAGS} ${HEADER} -o ./y.tab.o ./miniC.tab.c
+				bison ${PARSER_FILE} -b "miniC"
+				${CC} -c ${CFLAGS} ${FSFLAGS} ${HEADER} -o ./y.tab.o ./miniC.tab.c -g
 
 clean :
 				@echo "~~~~~~~~~~ CLEAN ~~~~~~~~~~~~"

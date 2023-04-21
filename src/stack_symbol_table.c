@@ -31,8 +31,13 @@ t_stack_symbol_table *pop_stack_symbol_table(t_stack_symbol_table **stack)
 
 void free_stack(t_stack_symbol_table *stack)
 {
-    while (stack)
-        pop_stack_symbol_table(&stack);
+    t_stack_symbol_table *tmp = stack;
+    while (tmp)
+    {
+        pop_stack_symbol_table(tmp);
+        tmp = tmp->next;
+    }
+    free (stack);
 }
 
 t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char *id)
@@ -48,3 +53,19 @@ t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char 
     }
     return (NULL);
 }
+
+t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *id)
+{
+    t_symbol_table_elem *elem;
+
+    while (stack)
+    {
+        elem = find_element_by_id(stack->table, id);
+        if (elem)
+            return (stack);
+        stack = stack->next;
+    }
+    return (NULL);
+}
+
+t_symbol_table

@@ -21,6 +21,7 @@ t_node	*create_new_node(int	type, void	*data)
 	new_node = malloc (sizeof(t_node));
 	new_node->type = type;
 	new_node->datas = data;
+    new_node->table = NULL;
 	return (new_node);
 }
 
