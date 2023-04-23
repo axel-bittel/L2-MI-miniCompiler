@@ -1,6 +1,7 @@
 %{
 	#include "compiler.h"
 	#include <stdio.h>
+	#include <unistd.h>
 	#define YYDEBUG 1
 %}
 %union	
@@ -34,19 +35,14 @@ programme	:
 ;
 liste_declarations	:	
 		liste_declarations declaration 	   { 
-												t_tree *tmp = $1;
-												t_tree *node = $2;
-												if 	(tmp)
-											 		node->f_a = tmp;
-											 	$$ = node;
+											 	$$ = create_parent_tree($1, $2, LIST_DECLARATION_NODE, NULL); 
 										   }
+	|	declaration							{	$$ = $1;}
 	|										{	$$ = (t_tree*)0;	}	
 ;
 liste_fonctions	:	
 		liste_fonctions fonction			{
-												t_tree *f1 = $1;
-												t_tree *f2 = $2;
-												$$ = create_parent_tree(f1, f2, LIST_FUNCTION_NODE, NULL);
+												$$ = create_parent_tree($1, $2, LIST_FUNCTION_NODE, NULL);
 											}	
 | 		fonction 							{ $$ = $1; }
 |       {
@@ -58,10 +54,7 @@ declaration	:
 ;
 liste_declarateurs	:	
 		liste_declarateurs ',' declarateur	{
-												t_tree *l_dec = $1;
-												t_tree*	dec = $3;
-												dec->f_b = l_dec;
-												$$ = dec;
+												$$ = create_parent_tree($1, $3, LIST_DECLARATION_NODE, NULL);
 											}
 	|	declarateur							{	$$ = $1;	}
 ;
@@ -70,13 +63,29 @@ declarateur	:
 													t_declaration* dec = malloc(sizeof(t_declaration));
 													dec->type = TYPE_INT;
 													dec->name = yylval.id;
-													$$ = create_parent_tree(NULL, NULL, VAR_DECLARATION_NODE, dec);
+													$$ = create_parent_tree(NULL, NULL, VAR_DECLARATEUR_NODE, dec);
 												
 												}
 	|	declarateur'[' CONSTANTE ']'			{	
-													int	*constante = nalloc(sizeof(int));
+													int	*constante = malloc(sizeof(int));
 													*constante = yylval.inttype;
-													$$ = create_parent_tree(NULL, $1, VAR_DECLARATION_NODE, constante);
+													t_tree	*sub = $1;
+													//IF PREVIOUS STEP WAS AN IDENTIFICATOR
+													if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_INT)
+													{
+														t_declaration	*dec = malloc(sizeof(t_declaration));
+														dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
+														dec->type = TYPE_TAB_INT;
+														$$ = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, VAR_DECLARATEUR_NODE, dec);		
+													}
+													else if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_TAB_INT)
+													{
+														t_tree	*inter = sub;
+														while (inter->f_b)
+															inter = inter->f_b;
+														inter->f_b = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, TAB_INT_DATA_NODE, NULL);
+														$$ = sub;
+													}
 												}
 ;
 fonction	:	
@@ -101,10 +110,7 @@ type	:
 ;
 liste_parms	:	
 		liste_parms ',' parm	{
-									t_tree *parm = $1;
-									t_tree *node = $3;
-									node->f_a = parm;
-									$$ = node;
+									$$ = create_parent_tree($1, $3, LIST_PARAM_NODE, NULL);
 								}
 	|	parm					{
 									$$ = $1;
@@ -121,19 +127,17 @@ parm	:
 ;
 liste_instructions :	
 		liste_instructions instruction	{ 
-											t_tree	*node = $2;
-											node->f_a = $1;
-											$$ = node;
+											$$ = create_parent_tree($1, $2, LIST_INSTRUCTION_NODE, NULL);
 										}
 	|									{	$$ = (t_tree*)0;	}
 ;
 instruction	:	
-		iteration 		{ $$ = create_parent_tree(NULL, $1, INSTRUCTION_NODE, NULL);}
-	|	selection		{ $$ = create_parent_tree(NULL, $1, INSTRUCTION_NODE, NULL);}
-	|	saut			{ $$ = create_parent_tree(NULL, $1, INSTRUCTION_NODE, NULL);}
-	|	affectation ';'	{ $$ = create_parent_tree(NULL, $1, INSTRUCTION_NODE, NULL);}
-	|	bloc			{ $$ = create_parent_tree(NULL, $1, INSTRUCTION_NODE, NULL);}
-	|	appel			{ $$ = create_parent_tree(NULL, $1, INSTRUCTION_NODE, NULL);}
+		iteration 		{ $$ = $1;}
+	|	selection		{ $$ = $1;}
+	|	saut			{ $$ = $1;}
+	|	affectation ';'	{ $$ = $1;}
+	|	bloc			{ $$ = $1;}
+	|	appel			{ $$ = $1;}
 ;
 iteration	:	
 		FOR '(' affectation ';' condition ';' affectation ')' instruction {
@@ -145,7 +149,7 @@ iteration	:
 ;
 selection	:	
 		IF '(' condition ')' instruction %prec THEN			{ $$ = create_parent_tree($3, $5, IF_NODE, NULL); }
-	|	IF '(' condition ')' instruction ELSE instruction	{ $$ = create_parent_tree(create_parent_tree($7, NULL, ELSE_NODE, NULL), $5, IF_NODE, $3); }
+	|	IF '(' condition ')' instruction ELSE instruction	{ $$ = create_parent_tree(create_parent_tree($3,$5,IF_NODE, NULL),create_parent_tree($7, NULL, ELSE_NODE, NULL),IF_NODE,NULL); }
 	|	SWITCH '(' expression ')' instruction				{ $$ = create_parent_tree($3, $5, SWITCH_NODE, NULL); }
 	|	CASE CONSTANTE ':' instruction						{ 
 																int	*constante = malloc(sizeof(int));
@@ -180,10 +184,23 @@ variable	:
 										$$ = create_parent_tree(NULL, NULL, VAR_NODE, dec);	
 									}
 	|	variable '[' expression ']'	{	
-										t_declaration	*dec = malloc(sizeof(t_declaration));
-										dec->name = yylval.id;
-										dec->type = TYPE_TAB_INT;
-										$$ = create_parent_tree(NULL, $3, VAR_NODE, dec);		
+										t_tree	*sub = $1;
+										//IF PREVIOUS STEP WAS AN IDENTIFICATOR
+										if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_INT)
+										{
+											t_declaration	*dec = malloc(sizeof(t_declaration));
+											dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
+											dec->type = TYPE_TAB_INT;
+											$$ = create_parent_tree($3, NULL, VAR_NODE, dec);		
+										}
+										else if (((t_declaration*)((t_node *)sub->content)->datas)->type == TYPE_TAB_INT)
+										{
+											t_tree	*inter = sub;
+											while (inter->f_b)
+												inter = inter->f_b;
+											inter->f_b = create_parent_tree($3, NULL, TAB_INT_DATA_NODE, NULL);
+											$$ = sub;
+										}
 									}
 ;
 expression	:	
@@ -208,14 +225,14 @@ expression	:
 													}
 ;
 liste_expressions	:	
-		liste_expressions ',' expression			{ $$ = create_parent_tree($3, $1, EXP_LIST_NODE, NULL); }
-	|	expression									{ $$ = create_parent_tree(NULL, $1, EXP_LIST_NODE, NULL); }
+		liste_expressions ',' expression			{ $$ = create_parent_tree($3, $1, LIST_EXPRESSION_NODE, NULL); }
+	|	expression									{ $$ = $1; }
 	|												{ $$ = (t_tree*)0; }
 ;
 condition	:	
 		NOT '(' condition ')'						{ $$ = create_parent_tree(NULL, $3, NOT_NODE, NULL);}	
 	|	condition binary_rel condition %prec REL	{ $$ = create_parent_tree($1, $3, $2, NULL);		}
-	|	'(' condition ')'							{ $$ = create_parent_tree(NULL, $2, COND_NODE, NULL);}
+	|	'(' condition ')'							{ $$ = $2; }
 	|	expression binary_comp expression			{ $$ = create_parent_tree($1, $3, $2, NULL);}
 ;
 binary_op	:	
@@ -247,6 +264,7 @@ binary_comp	:
 void yyerror(char *s)
 {
 	printf("erreur : %s, ligne %d\n", s, yylineno);
+	exit (1);
 }
 
 int main(int argc, char **argv)
@@ -263,8 +281,6 @@ int main(int argc, char **argv)
 			fprintf(stdout, "\n#compiler: compilation du fichier %s\n", argv[i]);
 		#endif
 		t_tree *ast= yyparse();
-		create_symbol_tables(ast);
-		
 		fclose(yyin);
 	}
 	return 0;

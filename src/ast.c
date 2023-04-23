@@ -40,31 +40,33 @@ t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data)
 void	print_tree(t_tree	*tree, int i)
 {
 	int	j = i;
-	printf("  ");
+    
+    
 	if (tree)
 	{
-		printf("ROOT -> ");
 		print_type(((t_node *)tree->content)->type);
 		printf("\n");
 	}
-	else
-		return ;
-	if (tree->f_b)
-	{
-		j = i;
-		while (j-- > 0)
-			printf("| ");
-		printf("Droite->");
-		print_tree(tree->f_b, i + 1);
-	}
-	if (tree->f_a)
-	{
-		j = i;
-		while (j-- > 0)
-			printf("| ");
+    else
+        return;
+    if (!tree->f_a && !tree->f_b)
+        return ;
+    j = i;
+	while (j-- > 0)
+		printf("| ");
 		printf("Gauche->");
+    if (tree->f_a)
 		print_tree(tree->f_a, i + 1);
-	}
+    else
+        printf("NULL\n");
+    j = i;
+	while (j-- > 0)
+		printf("| ");
+	printf("Droite->");
+	if (tree->f_b)
+		print_tree(tree->f_b, i + 1);
+    else
+        printf("NULL\n");
 }
 
 void print_type(int type)
@@ -167,8 +169,8 @@ void print_type(int type)
         case CONST_NODE:
             printf("CONST_NODE");
             break;
-        case VAR_DECLARATION_NODE:
-            printf("VAR_DECLARATION_NODE");
+        case VAR_DECLARATEUR_NODE:
+            printf("VAR_DECLARATEUR_NODE");
             break;
         case VAR_NODE:
             printf("VAR_NODE");
@@ -179,7 +181,7 @@ void print_type(int type)
         case ARG_NODE:
             printf("ARG_NODE");
             break;
-        case EXP_LIST_NODE:
+        case LIST_EXPRESSION_NODE:
             printf("EXP_LIST_NODE");
             break;
         case BLOCK_NODE:
@@ -203,6 +205,21 @@ void print_type(int type)
         case ROOT_NODE:
             printf("ROOT_NODE");
             break;
+        case LIST_DECLARATION_NODE:
+            printf("LIST_DECLARATION_NODE");
+            break;
+        case LIST_PARAM_NODE:
+            printf("LIST_PARAM_NODE");
+            break;       
+        case LIST_INSTRUCTION_NODE:
+            printf("LIST_INSTRUCTION_NODE");
+            break; 
+        case LIST_DECLARATEUR_NODE :
+            printf("LIST_DECLARATEUR_NODE ");
+            break; 
+        case TAB_INT_DATA_NODE:
+            printf("TAB_INT_DATA_NODE ");
+            break; 
         default:
             printf("%d", type);
             break;
