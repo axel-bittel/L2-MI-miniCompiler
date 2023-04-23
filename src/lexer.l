@@ -1,10 +1,15 @@
+D [0-9]
+L [a-zA-Z_]
+LD [a-zA-Z0-9_]
+S [ \t\v\n\f]
+
 %{
     #include <string.h>
     #include "compiler.h"
 %}
 %%
-[ \t\n]+                { }
-"/*"([^*]|(\*+[^*/]))*\*+"/"    {}
+{S}                     { }
+"/*"[^"*/"]*"*/"        { }
 "extern"                { return EXTERN; }
 "int"                   { return INT; }
 "void"                  { return VOID; }
@@ -35,13 +40,17 @@
 "!"                     { return NOT; }
 "&"                     { return BAND; }
 "|"                     { return BOR; }
-[0-9]+                  { 
+
+{D}+                    { 
                             yylval.inttype = atoi(yytext);
                             return CONSTANTE; 
                         }
-[a-zA-Z_][a-zA-Z0-9_]*  { 
+[\{\}\,\;\(\)\[\]\:\=]  { return yytext[0]; } 
+{L}{LD}*                {             
                             yylval.id = strdup(yytext);
                             return IDENTIFICATEUR; 
                         }
-.                       { return yytext[0]; } 
+{D}+[{L}\(\{\[]+        {   yyerror(); }
+{L}+(^[{L}|{D}])+       {   yyerror(); }
+.                       {   yyerror(); }
 %%
