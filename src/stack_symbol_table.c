@@ -67,5 +67,3 @@ t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *i
     }
     return (NULL);
 }
-
-t_symbol_table

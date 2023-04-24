@@ -58,39 +58,47 @@
 #define TAB_INT_DATA_NODE	    48 	 //NODE FOR DATA IN TAB_INT DECLARATION
 
 
-typedef struct stack_symbol_table t_stack_symbol_table;
+struct stack_symbol_table;
 
 //AST
 typedef struct	s_node
 {
 	char	type;
 	void	*datas;
-	t_stack_symbol_table	*table;
+	struct stack_symbol_table *table;
 }				t_node;
+
+typedef	struct	s_declaration
+{
+	int	type;
+	char	*name;
+}				t_declaration;
 
 void	print_tree(t_tree	*tree, int i);
 t_node	*create_new_node(int	type, void	*data);
 t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data);
 
-#define TYPE_VAR				0 	//ID VAR
-#define TYPE_FUNCTION			1	//ID FUNCTION
-#define TYPE_ARG				2	//ID ARG
-#define TYPE_EXTERN_FUNCTION	3	//ID ARG
+
 
 #define TYPE_INT			0	//VAR TYPE INT
 #define TYPE_TAB_INT		1	//VAR TYPE INT[]
-#define TYPE_VOID			2	//VAR TYPE INT[]
+#define TYPE_VOID			2	//TYPE VOID
 
 //SYMBOL TABLE
 typedef	struct	s_symbol_table_elem
 {
 	char	*name;
-	char	type_symbol;
+	char	type_identificateur;
 	char	type;
-	short 	nb_args;
-	int		line_declaration;
+	short 	nb_args;				// POUR LES FONCTIONS + EXTERN FONCTIONS
 	struct s_symbol_table_elem*	next;
 }				t_symbol_table_elem;
+
+
+#define TYPE_VAR				0 	//ID VAR
+#define TYPE_FUNCTION			1	//ID FUNCTION
+#define TYPE_ARG				2	//ID ARG
+#define TYPE_EXTERN_FUNCTION	3	//ID EXTERN FUNCTION
 
 #define SYMBOL_TYPE_GLOBAL		0
 #define SYMBOL_TYPE_FUNCTION	1
@@ -110,11 +118,5 @@ typedef struct stack_symbol_table
 	t_symbol_table	*table;
 	struct stack_symbol_table	*next;
 }				t_stack_symbol_table;
-
-typedef	struct	s_declaration
-{
-	int	type;
-	char	*name;
-}				t_declaration;
 
 #endif
