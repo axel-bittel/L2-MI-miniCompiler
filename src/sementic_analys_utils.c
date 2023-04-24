@@ -41,7 +41,6 @@ int create_symbol_tables(t_tree *ast)
     global_table = create_symbol_table(SYMBOL_TYPE_GLOBAL);
     return (_create_symbol_tables_rec(ast, global_table));
 }
-
 int sementic_analysis_check_return(t_tree *ast, int type_return)
 {
     int is_pushed_table = 0;
@@ -59,8 +58,8 @@ int sementic_analysis_check_return(t_tree *ast, int type_return)
         push_stack_symbol_table(stack, ((t_node *)ast->content)->table);
 
     // Call for others nodes and catch errors
-    if ((sementic_analysis_check_return(tmp->f_a, stack, tmp->type) == -1) \
-    ||  (sementic_analysis_check_return(tmp->f_b, stack, tmp->type) == -1))
+    if ((sementic_analysis_check_return(tmp->f_a, tmp->type) == -1) \
+    ||  (sementic_analysis_check_return(tmp->f_b, tmp->type) == -1))
     {
         if (is_pushed_table)
             pop_stack_symbol_table(stack);
@@ -68,8 +67,8 @@ int sementic_analysis_check_return(t_tree *ast, int type_return)
     }
     return (0);
 }
-
-int _sementic_analysis_rec(t_tree *ast, t_stack_symbol_table  *stack)
+/*
+int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack)
 {
     char *id;
     int type;
@@ -79,7 +78,7 @@ int _sementic_analysis_rec(t_tree *ast, t_stack_symbol_table  *stack)
     if (((t_node*)ast->content) == NULL)
         return (0); 
 
-    id = tmp->name;
+    id = ((t_declaration*)((t_node*)ast->content)->datas)->name;
     type = ((t_node*)ast->content)->type;
 
     // Push symbol table is it exist for this type
@@ -90,8 +89,8 @@ int _sementic_analysis_rec(t_tree *ast, t_stack_symbol_table  *stack)
     }
     switch (type) {
         case FUNCTION_NODE:                     
-            sementic_analysis_check_return(ast, stack, \
-                    (t_declaration *)((t_node*)ast->content)->datas->type);
+            sementic_analysis_check_return(ast, \
+                    ((t_declaration *)((t_node*)ast->content)->datas)->type);
             break;
         case VAR_NODE:
             if (!find_element_by_id(stack, id))
@@ -118,4 +117,4 @@ int sementic_analysis(t_tree *ast)
     t_stack_symbol_table    *stack = create_stack_symbol_table();
     push_stack_symbol_table(stack, ast->content);
     return (_sementic_analysis_rec(ast, stack));
-}
+}*/
