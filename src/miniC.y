@@ -28,10 +28,15 @@
 %%
 programme	:	
 		liste_declarations liste_fonctions 	{
-												t_tree	*end =  create_parent_tree($1, $2, ROOT_NODE, NULL);
-												print_tree(end, 0);
-												$$ = end;
-											}
+								t_tree	*end =  $2;
+								print_tree(end, 0);
+								$$ = end;
+							}
+|		liste_fonctions 	{
+								t_tree	*end =  $1;
+								print_tree(end, 0);
+								$$ = end;
+							}
 ;
 liste_declarations	:	
 		liste_declarations declaration 	   { 
@@ -67,26 +72,26 @@ declarateur	:
 												
 												}
 	|	declarateur'[' CONSTANTE ']'			{	
-													int	*constante = malloc(sizeof(int));
-													*constante = yylval.inttype;
-													t_tree	*sub = $1;
-													//IF PREVIOUS STEP WAS AN IDENTIFICATOR
-													if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_INT)
-													{
-														t_declaration	*dec = malloc(sizeof(t_declaration));
-														dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
-														dec->type = TYPE_TAB_INT;
-														$$ = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, VAR_DECLARATEUR_NODE, dec);		
-													}
-													else if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_TAB_INT)
-													{
-														t_tree	*inter = sub;
-														while (inter->f_b)
-															inter = inter->f_b;
-														inter->f_b = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, TAB_INT_DATA_NODE, NULL);
-														$$ = sub;
-													}
-												}
+									int	*constante = malloc(sizeof(int));
+									*constante = yylval.inttype;
+									t_tree	*sub = $1;
+									//IF PREVIOUS STEP WAS AN IDENTIFICATOR
+									if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_INT)
+									{
+										t_declaration	*dec = malloc(sizeof(t_declaration));
+										dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
+										dec->type = TYPE_TAB_INT;
+										$$ = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, VAR_DECLARATEUR_NODE, dec);
+									}
+									else if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_TAB_INT)
+									{
+										t_tree	*inter = sub;
+										while (inter->f_b)
+											inter = inter->f_b;
+										inter->f_b = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, TAB_INT_DATA_NODE, NULL);
+										$$ = sub;
+									}
+								}
 ;
 fonction	:	
 		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
@@ -94,15 +99,14 @@ fonction	:
 			t_declaration *func = malloc(sizeof(t_declaration));
 			func->name = yylval.id;
 			func->type = $1;
-			printf("func = %p\n", $4);
-			$$ = create_parent_tree($4, create_parent_tree($7, $8, BLOCK_FUN_NODE, NULL), FUNCTION_NODE, func);
+			t_tree *res = $8;
+			((t_node*)res->content)->datas = func;
+			((t_node*)res->type) = LIST_FUNCTION_NODE;
+			$$ = res;
 		}
 	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';' 	{
-																t_declaration	*fun = malloc(sizeof(t_declaration));
-																fun->name = yylval.id;
-																fun->type = $2;
-																$$ = create_parent_tree($5, NULL, EXTERN_FUNCTION_NODE, fun);
-															}
+										$$ = (t_tree*)0;
+									}
 ;
 type	:	
 		VOID	{ $$ = TYPE_VOID;}
@@ -167,7 +171,11 @@ affectation	:
 		variable '=' expression	{ $$ = create_parent_tree($1, $3, ASSIGN_NODE, NULL); }
 ;
 bloc	:	
-		'{' liste_declarations liste_instructions '}'	{ $$ = create_parent_tree($2, $3, BLOCK_NODE, NULL);}
+		'{' liste_declarations liste_instructions '}'	{ 
+															t_tree	*res = $3;
+															((t_node*)res->content)->type = BLOCK_NODE;
+															$$ = $3;
+														}
 ;
 appel	:	
 		IDENTIFICATEUR '(' liste_expressions ')' ';'	{ 
