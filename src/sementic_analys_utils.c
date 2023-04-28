@@ -31,7 +31,7 @@ int _create_symbol_tables_rec(t_tree *ast, t_symbol_table *actual_symbol_table, 
             break;
     }
     return (_create_symbol_tables_rec(tmp->f_a, table) &&
-    _create_symbol_tables_rec(tmp->f_b, table));
+   ) _create_symbol_tables_rec(tmp->f_b, table);
 }
 
 int create_symbol_tables(t_tree *ast)
@@ -96,7 +96,7 @@ int get_type_expression(t_tree  *tree, t_stack *stack)
     }
 }
 
-int sementic_analysis_check_return(t_tree *ast, t_stack_symbol_table *stack, int type_return)
+int sementic_analysis_check_return(t_tree *ast, int type_return)
 {
     int is_pushed_table = 0;
 
@@ -156,6 +156,72 @@ int is_args_type_valid(t_tree *ast, t_stack *stack)
     return (1);
 }
 
+*/
+
+int symbol_list_declaration_rec (t_tree *tree, t_symbol_table *table)
+{
+    if (((t_node *)tree->content)->type == VAR_DECLARATEUR_NODE)
+    {
+        t_node *tmp = (t_node *)(tree->content);
+        t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_VAR, 0);
+        add_element_in_symbol_table(table, new_elem);
+    }
+    else if (((t_node *)tree->content)->type == LIST_DECLARATION_NODE)
+    {
+        symbol_list_declaration_rec(tree->f_a,table);
+        symbol_list_declaration_rec(tree->f_b,table);
+    }
+    else
+    {
+        return (-1);
+    }
+    return(0);
+}
+
+
+int symbol_list_param_rec (t_tree *tree, t_symbol_table *table)
+{
+    if (((t_node *)tree->content)->type == ARG_NODE)
+    {
+        t_node *tmp = (t_node *)(tree->content);
+        t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_ARG, 0);
+        add_element_in_symbol_table(table, new_elem);
+    }
+    else if (((t_node *)tree->content)->type == LIST_PARAM_NODE)
+    {
+        symbol_list_param_rec(tree->f_a,table);
+        symbol_list_param_rec(tree->f_b,table);
+    }
+    else
+    {
+        return (-1);
+    }
+    return(0);
+}
+
+
+int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
+{
+    if (tree == NULL) return (-1);
+    if (((t_node *)(tree->f_a)->content)->type == BLOCK_FUN_NODE)
+    {
+        t_node *tmp = (t_node *)((tree->f_a)->content);
+        t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, 0);
+        add_element_in_symbol_table(table, new_elem);
+
+    }
+    else
+    {
+        symbol_list_fonction_rec(tree->f_a, table);
+    }
+    t_node *tmp = (t_node *)((tree->f_b)->content);
+    t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, 0);
+    add_element_in_symbol_table(table, new_elem);
+    return (0);
+}
+
+
+/*
 int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack)
 {
     char *id = NULL;
