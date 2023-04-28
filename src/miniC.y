@@ -23,7 +23,7 @@
 %left OP
 %left REL
 %start programme
-%type <tree> programme liste_declarations liste_fonctions declaration liste_declarateurs declarateur fonction liste_parms parm liste_instructions instruction iteration selection saut affectation bloc appel variable expression liste_expressions condition 
+%type <tree> programme liste_declarations liste_fonctions declaration liste_declarateurs declarateur fonction liste_parms parm liste_instructions instruction iteration selection saut affectation bloc appel variable expression liste_expressions condition function_param parm_call_function_list_expression
 %type <inttype>	type binary_op binary_rel binary_comp
 %%
 programme	:	
@@ -32,17 +32,11 @@ programme	:
 								print_tree(end, 0);
 								$$ = end;
 							}
-|		liste_fonctions 	{
-								t_tree	*end =  $1;
-								print_tree(end, 0);
-								$$ = end;
-							}
 ;
 liste_declarations	:	
 		liste_declarations declaration 	   { 
 											 	$$ = create_parent_tree($1, $2, LIST_DECLARATION_NODE, NULL); 
 										   }
-	|	declaration							{	$$ = $1;}
 	|										{	$$ = (t_tree*)0;	}	
 ;
 liste_fonctions	:	
@@ -50,9 +44,6 @@ liste_fonctions	:
 												$$ = create_parent_tree($1, $2, LIST_FUNCTION_NODE, NULL);
 											}	
 | 		fonction 							{ $$ = $1; }
-|       {
-			$$ = (t_tree*)0;
-		}
 ;
 declaration	:	
 		type liste_declarateurs ';'		{	$$ = $2;	}
@@ -94,23 +85,27 @@ declarateur	:
 								}
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
+		type IDENTIFICATEUR '(' function_param')' '{' liste_declarations liste_instructions '}'
 		{
 			t_declaration *func = malloc(sizeof(t_declaration));
 			func->name = yylval.id;
 			func->type = $1;
 			t_tree *res = $8;
 			((t_node*)res->content)->datas = func;
-			((t_node*)res->type) = LIST_FUNCTION_NODE;
+			((t_node*)res->content)->type = LIST_FUNCTION_NODE;
 			$$ = res;
 		}
-	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';' 	{
+	|	EXTERN type IDENTIFICATEUR '(' function_param ')' ';' 	{
 										$$ = (t_tree*)0;
 									}
 ;
 type	:	
 		VOID	{ $$ = TYPE_VOID;}
 	|	INT		{ $$ = TYPE_INT;}
+;
+function_param:
+			liste_parms 	{	$$ = $1;	}
+	|				    	{				}
 ;
 liste_parms	:	
 		liste_parms ',' parm	{
@@ -119,7 +114,6 @@ liste_parms	:
 	|	parm					{
 									$$ = $1;
 								}	
-	|							{	$$ = (t_tree*)0;	}
 ;
 parm	:	
 		INT IDENTIFICATEUR		{ 
@@ -141,7 +135,7 @@ instruction	:
 	|	saut			{ $$ = $1;}
 	|	affectation ';'	{ $$ = $1;}
 	|	bloc			{ $$ = $1;}
-	|	appel			{ $$ = $1;}
+	|	appel ';'		{ $$ = $1;}
 ;
 iteration	:	
 		FOR '(' affectation ';' condition ';' affectation ')' instruction {
@@ -178,7 +172,7 @@ bloc	:
 														}
 ;
 appel	:	
-		IDENTIFICATEUR '(' liste_expressions ')' ';'	{ 
+		IDENTIFICATEUR '(' parm_call_function_list_expression ')' 	{ 
 															t_declaration	*dec = malloc(sizeof(t_declaration));
 															dec->name = yylval.id;
 															$$ = create_parent_tree(NULL, $3, CALL_NODE, dec);
@@ -225,17 +219,15 @@ expression	:
 														*constante = yylval.inttype;
 														$$ = create_parent_tree(NULL, NULL, CONST_NODE, constante);
 													}
-	|	variable									{ $$ = $1; }
-	|	IDENTIFICATEUR '(' liste_expressions ')'	{ 
-														t_declaration	*dec = malloc(sizeof(t_declaration));
-														dec->name = yylval.id;
-														$$ = create_parent_tree(NULL, $3, CALL_NODE, dec); 
-													}
+	|	variable									{	$$ = $1; 	}
+	|	appel										{	$$ = $1;	}
 ;
+parm_call_function_list_expression	:
+		liste_expressions							{	$$ = $1;			}
+	|												{	$$ = (t_tree*)0;	}
 liste_expressions	:	
 		liste_expressions ',' expression			{ $$ = create_parent_tree($3, $1, LIST_EXPRESSION_NODE, NULL); }
 	|	expression									{ $$ = $1; }
-	|												{ $$ = (t_tree*)0; }
 ;
 condition	:	
 		NOT '(' condition ')'						{ $$ = create_parent_tree(NULL, $3, NOT_NODE, NULL);}	
@@ -277,6 +269,7 @@ void yyerror(char *s)
 
 int main(int argc, char **argv)
 {
+	yydebug = 1;
 	for (int i = 1; i < argc; i++)
 	{
 		yyin = fopen(argv[i], "r");
