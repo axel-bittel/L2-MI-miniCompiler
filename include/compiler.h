@@ -58,7 +58,8 @@
 #define TAB_INT_DATA_NODE	    48 	 //NODE FOR DATA IN TAB_INT DECLARATION
 
 
-struct s_symbol_table;
+struct stack_symbol_table;
+struct s_list_dimension;
 
 //AST
 typedef struct	s_node
@@ -95,12 +96,13 @@ typedef	struct	s_symbol_table_elem
 	struct s_symbol_table_elem	*next;
 }				t_symbol_table_elem;
 
-
+//TYPES DES ELEMS DE LA TABLE
 #define TYPE_VAR				0 	//ID VAR
 #define TYPE_FUNCTION			1	//ID FUNCTION
 #define TYPE_ARG				2	//ID ARG
 #define TYPE_EXTERN_FUNCTION	3	//ID EXTERN FUNCTION
 
+//TYPES DE TABLES :
 #define SYMBOL_TYPE_GLOBAL		0
 #define SYMBOL_TYPE_FUNCTION	1
 #define SYMBOL_TYPE_ARG			2

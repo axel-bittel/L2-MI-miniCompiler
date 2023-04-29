@@ -7,39 +7,41 @@ S [ \t\v\n\f]
     #include <string.h>
     #include "compiler.h"
 %}
+
 %%
+
 {S}                     { }
 "/*"[^"*/"]*"*/"        { }
-"extern"                { return EXTERN; }
-"int"                   { return INT; }
-"void"                  { return VOID; }
-"for"                   { return FOR; }
-"while"                 { return WHILE; }
-"if"                    { return IF; }
-"then"                  { return THEN; }
-"else"                  { return ELSE; }
-"switch"                { return SWITCH; }
-"case"                  { return CASE; }
-"default"               { return DEFAULT; }
-"break"                 { return BREAK; }
-"return"                { return RETURN; }
-">="                    { return GEQ; }
-"<="                    { return LEQ; }
-"<<"                    { return LSHIFT; }
-">>"                    { return RSHIFT; }
-"&&"                    { return LAND; }
-"||"                    { return LOR; }
-"=="                    { return EQ; }
-"!="                    { return NEQ; }
-">"                     { return GT; }
-"<"                     { return LT; }
-"+"                     { return PLUS; }
-"-"                     { return MOINS; }
-"*"                     { return MUL; }
-"/"                     { return DIV; }
-"!"                     { return NOT; }
-"&"                     { return BAND; }
-"|"                     { return BOR; }
+"extern"                { return EXTERN;    }    
+"int"                   { return INT;       }
+"void"                  { return VOID;      }
+"for"                   { return FOR;       }
+"while"                 { return WHILE;     }
+"if"                    { return IF;        }
+"then"                  { return THEN;      }
+"else"                  { return ELSE;      }
+"switch"                { return SWITCH;    }
+"case"                  { return CASE;      }
+"default"               { return DEFAULT;   }
+"break"                 { return BREAK;     }
+"return"                { return RETURN;    }
+">="                    { return GEQ;       }
+"<="                    { return LEQ;       }
+"<<"                    { return LSHIFT;    }
+">>"                    { return RSHIFT;    }
+"&&"                    { return LAND;      }
+"||"                    { return LOR;       }
+"=="                    { return EQ;        }
+"!="                    { return NEQ;       }
+">"                     { return GT;        }
+"<"                     { return LT;        }
+"+"                     { return PLUS;      }
+"-"                     { return MOINS;     }
+"*"                     { return MUL;       }
+"/"                     { return DIV;       }
+"!"                     { return NOT;       }
+"&"                     { return BAND;      }
+"|"                     { return BOR;       }
 
 {D}+                    { 
                             yylval.inttype = atoi(yytext);
@@ -50,7 +52,9 @@ S [ \t\v\n\f]
                             yylval.id = strdup(yytext);
                             return IDENTIFICATEUR; 
                         }
+
 {D}+[{L}\(\{\[]+        {   yyerror(); }
 {L}+(^[{L}|{D}])+       {   yyerror(); }
 .                       {   yyerror(); }
+
 %%
