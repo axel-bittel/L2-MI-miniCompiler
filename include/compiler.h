@@ -58,14 +58,14 @@
 #define TAB_INT_DATA_NODE	    48 	 //NODE FOR DATA IN TAB_INT DECLARATION
 
 
-struct stack_symbol_table;
+struct s_symbol_table;
 
 //AST
 typedef struct	s_node
 {
 	char	type;
 	void	*datas;
-	struct stack_symbol_table *table;
+	struct s_symbol_table *table;
 }				t_node;
 
 typedef	struct	s_declaration
@@ -91,7 +91,8 @@ typedef	struct	s_symbol_table_elem
 	char	type_identificateur;
 	char	type;
 	short 	nb_args;				// POUR LES FONCTIONS + EXTERN FONCTIONS
-	struct s_symbol_table_elem*	next;
+	struct s_list_dimension		*list_dimension;	// POUR LES TABLEAUX
+	struct s_symbol_table_elem	*next;
 }				t_symbol_table_elem;
 
 
@@ -119,4 +120,23 @@ typedef struct stack_symbol_table
 	struct stack_symbol_table	*next;
 }				t_stack_symbol_table;
 
+typedef struct s_list_dimension
+{
+	int dim;
+	struct s_list_dimension *next;
+}			t_list_dimension;
+
+t_symbol_table *create_symbol_table(char type_table);
+t_symbol_table_elem  *create_symbol_table_element(char *name, char type, char type_symbol, short nb_args, t_list_dimension *dim);
+int add_element_in_symbol_table(t_symbol_table *table, t_symbol_table_elem *new_elem);
+void    free_symbol_table(t_symbol_table* table);
+t_symbol_table_elem  *find_element_by_id(char *id, t_symbol_table *table);
+
+t_stack_symbol_table *create_stack_symbol_table(t_symbol_table* table);
+t_stack_symbol_table *push_stack_symbol_table(t_stack_symbol_table **stack, t_stack_symbol_table* new_stack);
+t_stack_symbol_table *pop_stack_symbol_table(t_stack_symbol_table **stack);
+void free_stack(t_stack_symbol_table *stack);
+t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char *id);
+t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *id);
+t_list_dimension *push_back_list_dim(t_list_dimension *list, int n);
 #endif

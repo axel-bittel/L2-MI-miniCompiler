@@ -13,16 +13,17 @@ t_symbol_table *create_symbol_table(char type_table)
     return (table);
 }
 
-t_symbol_table_elem  *create_symbol_table_element(char *name, char type, char type_symbol, short nb_args)
+t_symbol_table_elem  *create_symbol_table_element(char *name, char type, char type_symbol, short nb_args, t_list_dimension *dim)
 {
     t_symbol_table_elem* elem;
 
-    elem = (t_symbol_table_elem *)malloc(sizeof(elem));
+    elem = (t_symbol_table_elem *)malloc(sizeof(t_symbol_table_elem));
     elem->name = name;
     elem->type = type;
     elem->type_identificateur = type_symbol;
     elem->nb_args = nb_args;
     elem->next = NULL;
+    elem->list_dimension = dim;
 
     return (elem);
 }
@@ -34,7 +35,10 @@ int add_element_in_symbol_table(t_symbol_table *table, t_symbol_table_elem *new_
     if (table->begin == NULL)
         table->begin = new_elem;
     else if (table->end == NULL)
+    {
+        table->begin->next = new_elem;
         table->end = new_elem;
+    }
     else
     {
         table->end->next = new_elem;

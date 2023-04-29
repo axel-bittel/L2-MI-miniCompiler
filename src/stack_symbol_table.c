@@ -46,7 +46,7 @@ t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char 
 
     while (stack)
     {
-        elem = find_element_by_id(stack->table, id);
+        elem = find_element_by_id(id, stack->table);
         if (elem)
             return (elem);
         stack = stack->next;
@@ -60,7 +60,7 @@ t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *i
 
     while (stack)
     {
-        elem = find_element_by_id(stack->table, id);
+        elem = find_element_by_id(id, stack->table);
         if (elem)
             return (stack);
         stack = stack->next;

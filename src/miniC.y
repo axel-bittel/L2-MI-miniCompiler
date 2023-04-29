@@ -3,6 +3,9 @@
 	#include <stdio.h>
 	#include <unistd.h>
 	#define YYDEBUG 1
+
+	t_tree	*ast;
+	t_symbol_table	*global_symbol_table;
 %}
 %union	
 {
@@ -25,11 +28,21 @@
 %start programme
 %type <tree> programme liste_declarations liste_fonctions declaration liste_declarateurs declarateur fonction liste_parms parm liste_instructions instruction iteration selection saut affectation bloc appel variable expression liste_expressions condition function_param parm_call_function_list_expression
 %type <inttype>	type binary_op binary_rel binary_comp
+%type <id> name
 %%
 programme	:	
 		liste_declarations liste_fonctions 	{
-								t_tree	*end =  $2;
-								print_tree(end, 0);
+								t_tree	*end =  create_parent_tree(NULL, $2, ROOT_NODE, NULL);
+								t_symbol_table *table = global_symbol_table;
+								// Si on a pas de table globale, on en crée une
+								// Peut ne pas exister si pas de extern
+								if (!table)
+									table = create_symbol_table(SYMBOL_TYPE_GLOBAL);
+								((t_node*)end->content)->table = table;
+								symbol_list_declaration_rec($1, table);
+								symbol_list_fonction_rec($2, table);
+								// print_tree(end, 0);
+								ast = end;
 								$$ = end;
 							}
 ;
@@ -41,7 +54,12 @@ liste_declarations	:
 ;
 liste_fonctions	:	
 		liste_fonctions fonction			{
-												$$ = create_parent_tree($1, $2, LIST_FUNCTION_NODE, NULL);
+												if ($1 && $2)
+													$$ = create_parent_tree($1, $2, LIST_FUNCTION_NODE, NULL);
+												else if ($1)
+													$$ = $1;
+												else if ($2)
+													$$ = $2;
 											}	
 | 		fonction 							{ $$ = $1; }
 ;
@@ -84,28 +102,48 @@ declarateur	:
 									}
 								}
 ;
+name:
+		IDENTIFICATEUR							{
+													$$ = yylval.id;
+												}
+;
 fonction	:	
-		type IDENTIFICATEUR '(' function_param')' '{' liste_declarations liste_instructions '}'
+		type name '(' function_param ')' '{' liste_declarations liste_instructions '}'
 		{
 			t_declaration *func = malloc(sizeof(t_declaration));
-			func->name = yylval.id;
+			func->name = $2;
 			func->type = $1;
 			t_tree *res = $8;
 			((t_node*)res->content)->datas = func;
-			((t_node*)res->content)->type = LIST_FUNCTION_NODE;
+			((t_node*)res->content)->type = FUNCTION_NODE;
+			t_symbol_table	*table_function = ((t_node*)res->content)->table;
+			if (!table_function)
+			{
+				table_function = create_symbol_table(SYMBOL_TYPE_FUNCTION);
+			}
+			symbol_list_declaration_rec($7, table_function);
+			symbol_list_param_rec($4, table_function);
+			((t_node*)res->content)->table = table_function;
 			$$ = res;
 		}
-	|	EXTERN type IDENTIFICATEUR '(' function_param ')' ';' 	{
-										$$ = (t_tree*)0;
-									}
+	|	EXTERN type name '(' function_param ')' ';' 	
+		{
+			// Si on a pas de table globale, on en crée une
+			// n'existe pas si premier extern
+			if (!global_symbol_table)
+				global_symbol_table = create_symbol_table(SYMBOL_TYPE_GLOBAL);
+			t_symbol_table_elem *new_elem = create_symbol_table_element($3, $2, TYPE_FUNCTION, 0, 0);
+			add_element_in_symbol_table(global_symbol_table, new_elem);
+			$$ = (t_tree*)0;
+		}
 ;
 type	:	
 		VOID	{ $$ = TYPE_VOID;}
 	|	INT		{ $$ = TYPE_INT;}
 ;
 function_param:
-			liste_parms 	{	$$ = $1;	}
-	|				    	{				}
+			liste_parms 	{	$$ = $1;		}
+	|				    	{	$$ = (t_tree*)0;}
 ;
 liste_parms	:	
 		liste_parms ',' parm	{
@@ -168,13 +206,16 @@ bloc	:
 		'{' liste_declarations liste_instructions '}'	{ 
 															t_tree	*res = $3;
 															((t_node*)res->content)->type = BLOCK_NODE;
+															t_symbol_table	*table = create_symbol_table(SYMBOL_TYPE_LOCAL);
+															((t_node*)res->content)->table = table;
+															symbol_list_declaration_rec($2, table);
 															$$ = $3;
 														}
 ;
 appel	:	
-		IDENTIFICATEUR '(' parm_call_function_list_expression ')' 	{ 
+		name '(' parm_call_function_list_expression ')' 	{ 
 															t_declaration	*dec = malloc(sizeof(t_declaration));
-															dec->name = yylval.id;
+															dec->name = $1;
 															$$ = create_parent_tree(NULL, $3, CALL_NODE, dec);
 														}
 ;
@@ -213,7 +254,7 @@ expression	:
 														t_tree *node3 = $3;
 														$$ = create_parent_tree(node1, node3, type, NULL);
 													}
-	|	MOINS expression							{ $$ = create_parent_tree(NULL, $2, OPP_NODE, NULL);}
+	|	MOINS expression							{ $$ = create_parent_tree(NULL, $2, MINUS_NODE, NULL);}
 	|	CONSTANTE									{
 														int *constante = malloc(sizeof(int));
 														*constante = yylval.inttype;
@@ -269,7 +310,6 @@ void yyerror(char *s)
 
 int main(int argc, char **argv)
 {
-	yydebug = 1;
 	for (int i = 1; i < argc; i++)
 	{
 		yyin = fopen(argv[i], "r");
@@ -281,7 +321,10 @@ int main(int argc, char **argv)
 		#ifdef YYDEBUG
 			fprintf(stdout, "\n#compiler: compilation du fichier %s\n", argv[i]);
 		#endif
-		t_tree *ast= yyparse();
+		yyparse();
+		conver_and_sementic_analys(ast);
+		ast = NULL;
+		global_symbol_table = NULL;
 		fclose(yyin);
 	}
 	return 0;
