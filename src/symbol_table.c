@@ -22,6 +22,7 @@ t_symbol_table_elem  *create_symbol_table_element(char *name, char type, char ty
     elem->type = type;
     elem->type_identificateur = type_symbol;
     elem->nb_args = nb_args;
+    elem->dim = 0;
     elem->next = NULL;
 
     return (elem);
@@ -40,6 +41,7 @@ int add_element_in_symbol_table(t_symbol_table *table, t_symbol_table_elem *new_
         table->end->next = new_elem;
         table->end = new_elem;
     }
+    table->size += 1;
     return (0);
 }
 

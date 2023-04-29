@@ -59,6 +59,7 @@
 
 
 struct stack_symbol_table;
+struct s_list_dimension;
 
 //AST
 typedef struct	s_node
@@ -91,15 +92,17 @@ typedef	struct	s_symbol_table_elem
 	char	type_identificateur;
 	char	type;
 	short 	nb_args;				// POUR LES FONCTIONS + EXTERN FONCTIONS
-	struct s_symbol_table_elem*	next;
+	struct	s_list_dimension	*dim;
+	struct	s_symbol_table_elem*	next;
 }				t_symbol_table_elem;
 
-
+//TYPES DES ELEMS DE LA TABLE
 #define TYPE_VAR				0 	//ID VAR
 #define TYPE_FUNCTION			1	//ID FUNCTION
 #define TYPE_ARG				2	//ID ARG
 #define TYPE_EXTERN_FUNCTION	3	//ID EXTERN FUNCTION
 
+//TYPES DE TABLES :
 #define SYMBOL_TYPE_GLOBAL		0
 #define SYMBOL_TYPE_FUNCTION	1
 #define SYMBOL_TYPE_ARG			2
@@ -119,4 +122,9 @@ typedef struct stack_symbol_table
 	struct stack_symbol_table	*next;
 }				t_stack_symbol_table;
 
+typedef struct s_list_dimension
+{
+	int	dim;
+	struct s_list_dimension *next;
+}				t_list_dimension;
 #endif
