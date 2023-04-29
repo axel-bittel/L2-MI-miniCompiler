@@ -128,10 +128,22 @@ int sementic_analysis_check_return(t_tree *ast, int type_return)
     return (1);
 }
 
-int get_number_args(t_tree *ast)
+int get_number_args(t_tree *ast)//In a call
 {
     // If the node is not a list expression we are in the end
     if (((t_node *)ast->content)->type != LIST_EXPRESSION_NODE)
+        return (1);
+    // If there is a son at the left -> we are not in the end
+    if (ast->f_a)
+        return (get_number_args(ast->f_a) + 1);
+    // else we are in the end (We should not have this case)
+    return (1);
+}
+
+int get_number_args_decl(t_tree *ast)//In a declaration
+{
+    // If the node is not a list param we are in the end
+    if (((t_node *)ast->content)->type != LIST_PARAM_NODE)
         return (1);
     // If there is a son at the left -> we are not in the end
     if (ast->f_a)
@@ -206,7 +218,7 @@ int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
     if (((t_node *)(tree->f_a)->content)->type == BLOCK_FUN_NODE)
     {
         t_node *tmp = (t_node *)((tree->f_a)->content);
-        t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, 0);
+        t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, get_number_args_decl(tree->f_a));
         add_element_in_symbol_table(table, new_elem);
 
     }
@@ -215,7 +227,7 @@ int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
         symbol_list_fonction_rec(tree->f_a, table);
     }
     t_node *tmp = (t_node *)((tree->f_b)->content);
-    t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, 0);
+    t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, get_number_args_decl(tree->f_b));
     add_element_in_symbol_table(table, new_elem);
     return (0);
 }
