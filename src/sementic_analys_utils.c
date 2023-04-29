@@ -215,10 +215,10 @@ int symbol_list_param_rec (t_tree *tree, t_symbol_table *table)
 int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
 {
     if (tree == NULL) return (-1);
-    if (((t_node *)(tree->f_a)->content)->type == BLOCK_FUN_NODE)
+    if (((t_node *)(tree->f_a)->content)->type == FUNCTION_NODE)
     {
         t_node *tmp = (t_node *)((tree->f_a)->content);
-        t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, get_number_args_decl(tree->f_a));
+        t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, get_number_args_decl(tree->f_a->f_a));
         add_element_in_symbol_table(table, new_elem);
 
     }
@@ -227,7 +227,7 @@ int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
         symbol_list_fonction_rec(tree->f_a, table);
     }
     t_node *tmp = (t_node *)((tree->f_b)->content);
-    t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, get_number_args_decl(tree->f_b));
+    t_symbol_table_elem *new_elem = create_symbol_table_element(tmp->datas, tmp->type, TYPE_FUNCTION, get_number_args_decl(tree->f_b->f_a));
     add_element_in_symbol_table(table, new_elem);
     return (0);
 }
