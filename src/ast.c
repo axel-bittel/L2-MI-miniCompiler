@@ -170,7 +170,7 @@ void print_type(int type)
             printf("ARG_NODE");
             break;
         case LIST_EXPRESSION_NODE:
-            printf("EXP_LIST_NODE");
+            printf("LIST_EXPRESSION_NODE");
             break;
         case BLOCK_NODE:
             printf("BLOCK_NODE");

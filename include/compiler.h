@@ -73,6 +73,7 @@ typedef	struct	s_declaration
 {
 	int	type;
 	char	*name;
+	int		cst;
 }				t_declaration;
 
 void	print_tree(t_tree	*tree, int i);
@@ -141,4 +142,5 @@ void free_stack(t_stack_symbol_table *stack);
 t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char *id);
 t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *id);
 t_list_dimension *push_back_list_dim(t_list_dimension *list, int n);
+int get_number_args_decl(t_tree *ast);//In a declaration
 #endif

@@ -107,11 +107,13 @@ int get_number_args(t_tree *ast)
     if (((t_node *)ast->content)->type != LIST_EXPRESSION_NODE
     && ((t_node *)ast->content)->type != CALL_NODE)
         return (1);
+    if (((t_node *)ast->content)->type == CALL_NODE && ast->f_b)
+        return (get_number_args(ast->f_b));
     // If there is a son at the left -> we are not in the end
-    if (ast->f_a)
-        return (get_number_args(ast->f_a) + 1);
-    // else we are in the end (We should not have this case)
-    return (((t_node *)ast->content)->type != CALL_NODE);
+    if (ast->f_b)
+        return (get_number_args(ast->f_b) + 1);
+    // else we are in the case here we have a call node with no args or one arg
+    return (ast->f_b != NULL);
 }
 
 int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack)
@@ -188,7 +190,7 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack)
                 return (print_error("function not exist\n", NULL), -1);
             // Bad number of args
             t_symbol_table_elem *fun_elem = find_element_by_id_stack(stack, id);
-            if (get_number_args(ast) != elem->nb_args && 0)
+            if (get_number_args(ast) != fun_elem->nb_args)
                 return (print_error("Bad number argument for the function \n", NULL), -1);
             // Bad type of args
             if (is_args_type_valid(ast->f_b, stack) == -1)

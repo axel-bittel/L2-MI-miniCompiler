@@ -84,14 +84,27 @@ int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
         // Check double declarations
         if (find_element_by_id(((t_declaration*)tmp->datas)->name, table))
             return (print_error("Double fonction definition : ",((t_declaration*)tmp->datas)->name, table), -1);
-        t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_FUNCTION, 0, 0);
+        t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_FUNCTION, ((t_declaration*)tmp->datas)->cst, 0);
         add_element_in_symbol_table(table, new_elem);
         return (0);
     }
     // else we continue to go down and after add the function
     symbol_list_fonction_rec(tree->f_a, table);
     t_node *tmp = (t_node *)((tree->f_b)->content);
-    t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_FUNCTION, 0, 0);
+    t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_FUNCTION,((t_declaration*)tmp->datas)->cst, 0);
     add_element_in_symbol_table(table, new_elem);
     return (0);
+}
+
+int get_number_args_decl(t_tree *ast)//In a declaration
+{
+    if (!ast) return (0);
+    // If the node is not a list param we are in the end
+    if (((t_node *)ast->content)->type != LIST_PARAM_NODE)
+        return (1);
+    // If there is a son at the left -> we are not in the end
+    if (ast->f_a)
+        return (get_number_args(ast->f_a) + 1);
+    // else we are in the end (We should not have this case)
+    return (1);
 }
