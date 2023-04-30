@@ -13,7 +13,11 @@ SRCS			=	${SRC_DIR}/ft_tree/ft_treeadd_f.c\
 					${SRC_DIR}/ft_tree/ft_treeprof.c\
 					${SRC_DIR}/ast.c\
 					${SRC_DIR}/symbol_table.c\
-					${SRC_DIR}/stack_symbol_table.c
+					${SRC_DIR}/stack_symbol_table.c\
+					${SRC_DIR}/sementic_analys.c\
+					${SRC_DIR}/sementic_symbol_table.c\
+					${SRC_DIR}/dim.c\
+					${SRC_DIR}/dot.c
 TESTS_FILES 	= 	${shell ls ExampleFiles/*.c}
 NAME			=	compiler
 
