@@ -29,7 +29,7 @@ int symbol_list_declaration_rec (t_tree *tree, t_symbol_table *table)
         t_node *tmp = (t_node *)(tree->content);
         // Check double declarations
         if (find_element_by_id(((t_declaration*)tmp->datas)->name, table))
-            return (print_error("Double variable definition : ",((t_declaration*)tmp->datas)->name, table), -1);
+            return (print_error("Double variable definition : ",((t_declaration*)tmp->datas)->name), -1);
         if (((t_declaration*)((t_node *)tree->content)->datas)->type == TYPE_TAB_INT)
             dim = create_dim_list_rec(tree->f_b, NULL);
         t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_VAR, 0, dim);
@@ -56,7 +56,7 @@ int symbol_list_param_rec (t_tree *tree, t_symbol_table *table)
         t_node *tmp = (t_node *)(tree->content);
         // Check double declarations
         if (find_element_by_id(((t_declaration*)tmp->datas)->name, table))
-            return (print_error("Double param definition : ",((t_declaration*)tmp->datas)->name, table), -1);
+            return (print_error("Double param definition : ",((t_declaration*)tmp->datas)->name), -1);
         t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_ARG, 0, 0);
         add_element_in_symbol_table(table, new_elem);
     }
@@ -83,7 +83,7 @@ int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
         t_node *tmp = (t_node *)(tree->content);
         // Check double declarations
         if (find_element_by_id(((t_declaration*)tmp->datas)->name, table))
-            return (print_error("Double fonction definition : ",((t_declaration*)tmp->datas)->name, table), -1);
+            return (print_error("Double fonction definition : ",((t_declaration*)tmp->datas)->name), -1);
         t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_FUNCTION, ((t_declaration*)tmp->datas)->cst, 0);
         add_element_in_symbol_table(table, new_elem);
         return (0);

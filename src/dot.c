@@ -2,8 +2,11 @@
 
 int decl_dot(t_tree *tree, FILE *f, int nb)
 {
-	int type = ((t_node*)tree->content)->type;
-    nb += 1;
+	int type;
+    
+    if (!tree || !tree->content)
+        return(nb);
+    type = ((t_node*)tree->content)->type;
     switch (type)
 	{
         case IF_NODE:
@@ -91,7 +94,7 @@ int decl_dot(t_tree *tree, FILE *f, int nb)
             return(nb);
 
         case FUNCTION_NODE:
-            fprintf(f, "\tnode_%d [label=\"%s, %s\" shape=invtrapezium color=blue];\n",nb, ((t_declaration*)((t_node*)tree->content)->datas)->name, ((t_declaration*)((t_node*)tree->content)->datas)->type);
+            fprintf(f, "\tnode_%d [label=\"%s, %d\" shape=invtrapezium color=blue];\n",nb, ((t_declaration*)((t_node*)tree->content)->datas)->name, ((t_declaration*)((t_node*)tree->content)->datas)->type);
 			return(nb);
 
         case WHILE_NODE:
@@ -103,11 +106,11 @@ int decl_dot(t_tree *tree, FILE *f, int nb)
             return(nb);
 
 		case CONST_NODE:
-			fprintf(f,"\tnode_%d [shape=ellipse label=\"%s\";]\n",nb,((t_node*)tree->content)->datas);
+			fprintf(f,"\tnode_%d [shape=ellipse label=\"%d\";]\n",nb, *(int*)((t_node*)tree->content)->datas);
 			return(nb);
 
         case VAR_NODE:
-            fprintf(f,"\tnode_%d [shape=ellipse label=\"%s\"];\n",nb,((t_node*)tree->content)->datas);
+            fprintf(f,"\tnode_%d [shape=ellipse label=\"%s\"];\n",nb,((t_declaration*)((t_node*)tree->content)->datas)->name);
 			return(nb);
 
         case BLOCK_NODE:

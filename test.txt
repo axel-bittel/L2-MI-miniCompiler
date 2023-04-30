@@ -1,6 +1,0 @@
-digraph mon_programme {
-	node_mafonction [label="4227495, 23" shape=invtrapezium color=blue];
-	node_reste [shape=triangle label="..." style=dotted];
-	node_mafonction ->  node_reste
-	
-}

@@ -115,6 +115,7 @@ fonction	:
 			t_declaration *func = malloc(sizeof(t_declaration));
 			func->name = $2;
 			func->type = $1;
+			func->cst = get_number_args_decl($4);
 			t_tree *res = $8;
 			((t_node*)res->content)->datas = func;
 			((t_node*)res->content)->type = FUNCTION_NODE;
@@ -134,7 +135,7 @@ fonction	:
 			// n'existe pas si premier extern
 			if (!global_symbol_table)
 				global_symbol_table = create_symbol_table(SYMBOL_TYPE_GLOBAL);
-			t_symbol_table_elem *new_elem = create_symbol_table_element($3, $2, TYPE_FUNCTION, 0, 0);
+			t_symbol_table_elem *new_elem = create_symbol_table_element($3, $2, TYPE_FUNCTION, get_number_args_decl($5), 0);
 			add_element_in_symbol_table(global_symbol_table, new_elem);
 			$$ = (t_tree*)0;
 		}
@@ -332,33 +333,39 @@ int main(int argc, char **argv)
 {
 	for (int i = 1; i < argc; i++)
 	{
+		FILE *f_decla, *f_link, *f;
+		char	name_end_file[4096] = {0};
+  	    
 		yyin = fopen(argv[i], "r");
 		if (yyin == NULL)
 		{
 			fprintf(stderr, "compiler: impossible d'ouvrir le fichier %s\n", argv[i]);
 			continue ; 
 		}
+		// Create two temporary files
+		sprintf(name_end_file, "./%s_decla.inter", argv[i]);
+		printf("%s\n", name_end_file);
+		f_decla = fopen(name_end_file, "w");
+		sprintf(name_end_file, "./%s_link.inter", argv[i]);
+		f_link = fopen(name_end_file, "w");
+		printf("%s\n", name_end_file);
+		
+		// Create the final file
+		sprintf(name_end_file, "./%s.dot", argv[i]);
+		f = fopen(name_end_file, "w");
 		#ifdef YYDEBUG
 			fprintf(stdout, "\n#compiler: compilation du fichier %s\n", argv[i]);
 		#endif
 		yyparse();
-		conver_and_sementic_analys(ast);
+		fprintf(f, "digraph mon_programme {\n");
+		conver_and_sementic_analys(ast, f_decla, f_link);
 		ast = NULL;
 		global_symbol_table = NULL;
+		fprintf(f, "\n}");
+		fclose(f_decla);
+		fclose(f_link);
 		fclose(yyin);
+		fclose(f);
 	}
-
-	t_tree	*tree = create_parent_tree(NULL, NULL, FUNCTION_NODE, "Fonction");
-
-	FILE *f_decla, *f_link, *f;
-    f_decla = fopen("./decla.txt", "w");
-	f_link = fopen("./link.txt", "w");
-	f = fopen("./test.txt", "w");
-	fprintf(f, "digraph mon_programme {\n");
-	create_dot(tree, f_decla, f_link, f, 0);
-	fprintf(f, "\n}");
-	fclose(f_decla);
-	fclose(f_link);
-	fclose(f);
 	return 0;
 }

@@ -76,12 +76,6 @@ typedef	struct	s_declaration
 	int		cst;
 }				t_declaration;
 
-void	print_tree(t_tree	*tree, int i);
-t_node	*create_new_node(int	type, void	*data);
-t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data);
-
-
-
 #define TYPE_INT			0	//VAR TYPE INT
 #define TYPE_TAB_INT		1	//VAR TYPE INT[]
 #define TYPE_VOID			2	//TYPE VOID
@@ -129,6 +123,36 @@ typedef struct s_list_dimension
 	struct s_list_dimension *next;
 }			t_list_dimension;
 
+// AST 
+t_node	*create_new_node(int	type, void	*data);
+t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data);
+void	print_tree(t_tree	*tree, int i);
+void print_type(int type);
+
+// SEMENTIC ANALYSIS
+void    print_error(char *error, char   *complement);
+int check_tab_dimention(t_tree *tree);
+int get_type_expression(t_tree  *tree, t_stack_symbol_table *stack);
+int sementic_analysis_check_return(t_tree *ast, t_stack_symbol_table *stack, int type_return);
+int get_number_args(t_tree *ast);
+int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack);
+int conver_and_sementic_analys(t_tree *ast, FILE*   f_decla, FILE*  f_link);
+int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, FILE*   f_decla, FILE*  f_link);
+
+// DIMENSION LIST
+t_list_dimension *create_list_dim(int n);
+t_list_dimension *push_back_list_dim(t_list_dimension *list, int n);
+t_list_dimension *pop_back_list_dim(t_list_dimension *list);
+void free_list_dim(t_list_dimension *list);
+
+// SEMENTIC SYMBOLE TABLE
+t_list_dimension    *create_dim_list_rec(t_tree *tree, t_list_dimension *new_list);
+int symbol_list_declaration_rec (t_tree *tree, t_symbol_table *table);
+int symbol_list_param_rec (t_tree *tree, t_symbol_table *table);
+int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table);
+int get_number_args_decl(t_tree *ast);//In a declaration
+
+// SYMBOL TABLE
 t_symbol_table *create_symbol_table(char type_table);
 t_symbol_table_elem  *create_symbol_table_element(char *name, char type, char type_symbol, short nb_args, t_list_dimension *dim);
 int add_element_in_symbol_table(t_symbol_table *table, t_symbol_table_elem *new_elem);
@@ -138,9 +162,10 @@ t_symbol_table_elem  *find_element_by_id(char *id, t_symbol_table *table);
 t_stack_symbol_table *create_stack_symbol_table(t_symbol_table* table);
 t_stack_symbol_table *push_stack_symbol_table(t_stack_symbol_table **stack, t_stack_symbol_table* new_stack);
 t_stack_symbol_table *pop_stack_symbol_table(t_stack_symbol_table **stack);
-void free_stack(t_stack_symbol_table *stack);
 t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char *id);
 t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *id);
-t_list_dimension *push_back_list_dim(t_list_dimension *list, int n);
-int get_number_args_decl(t_tree *ast);//In a declaration
+void free_stack(t_stack_symbol_table *stack);
+
+int decl_dot(t_tree *tree, FILE *f, int nb);
+int link_dot(int node_1, int node_2, FILE *f);
 #endif
