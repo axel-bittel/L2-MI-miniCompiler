@@ -166,7 +166,14 @@ int decl_dot(t_tree *tree, int nb)
 			fprintf(fileResult_decla,"\tnode_%d [label=\"SWITCH\" shape=ellipse];\n",nb);
             fflush(fileResult_decla);
             break;
-
+        case CASE_NODE:
+            fprintf(fileResult_decla,"\tnode_%d [label=\"CASE\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
+        case DEFAULT_NODE:
+            fprintf(fileResult_decla,"\tnode_%d [label=\"DEFAULT\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
         default:
             return (0);
             break;

@@ -92,7 +92,7 @@ declarateur	:
 										t_declaration	*dec = malloc(sizeof(t_declaration));
 										dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
 										dec->type = TYPE_TAB_INT;
-										$$ = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, VAR_DECLARATEUR_NODE, dec);
+										$$ = create_parent_tree(create_parent_tree(NULL, NULL, VAR_NODE, dec),create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, TAB_INT_DATA_NODE, NULL), VAR_DECLARATEUR_NODE, dec);
 									}
 									else if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_TAB_INT)
 									{
@@ -203,7 +203,7 @@ selection :
 	|	CASE CONSTANTE ':' instruction						{ 
 																int	*constante = malloc(sizeof(int));
 																*constante = yylval.inttype;
-																$$ = create_parent_tree(NULL, $4, CASE_NODE, constante);
+																$$ = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), $4, CASE_NODE, constante);
 															}
 	|	DEFAULT ':' instruction								{	$$ = create_parent_tree(NULL, $3, DEFAULT_NODE, NULL);	}
 ;
@@ -250,7 +250,10 @@ variable :
 																	t_declaration	*dec = malloc(sizeof(t_declaration));
 																	dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
 																	dec->type = TYPE_TAB_INT;
-																	$$ = create_parent_tree($3, NULL, VAR_NODE, dec);		
+																	t_declaration	*dec_id = malloc(sizeof(t_declaration));
+																	dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
+																	dec->type = TYPE_INT; // FAKE
+																	$$ = create_parent_tree(create_parent_tree(NULL, NULL, VAR_NODE, dec_id), $3, VAR_NODE, dec);		
 																}
 																else if (((t_declaration*)((t_node *)sub->content)->datas)->type == TYPE_TAB_INT)
 																{
