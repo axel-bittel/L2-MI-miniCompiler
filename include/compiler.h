@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "ft_tree.h"
 
 #define COND_NODE                0   //NODE FOR BEGIN CONDITION
@@ -56,7 +58,6 @@
 #define LIST_INSTRUCTION_NODE   46 	 //NODE FOR LIST OF INSTRUCTION
 #define LIST_DECLARATEUR_NODE   47 	 //NODE FOR LIST OF DECLARATEUR
 #define TAB_INT_DATA_NODE	    48 	 //NODE FOR DATA IN TAB_INT DECLARATION
-
 
 struct stack_symbol_table;
 struct s_list_dimension;
@@ -136,8 +137,8 @@ int get_type_expression(t_tree  *tree, t_stack_symbol_table *stack);
 int sementic_analysis_check_return(t_tree *ast, t_stack_symbol_table *stack, int type_return);
 int get_number_args(t_tree *ast);
 int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack);
-int conver_and_sementic_analys(t_tree *ast, FILE*   f_decla, FILE*  f_link);
-int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, FILE*   f_decla, FILE*  f_link);
+int conver_and_sementic_analys(t_tree *ast);
+int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int actual_node);
 
 // DIMENSION LIST
 t_list_dimension *create_list_dim(int n);
@@ -159,6 +160,7 @@ int add_element_in_symbol_table(t_symbol_table *table, t_symbol_table_elem *new_
 void    free_symbol_table(t_symbol_table* table);
 t_symbol_table_elem  *find_element_by_id(char *id, t_symbol_table *table);
 
+// STACK TABLE
 t_stack_symbol_table *create_stack_symbol_table(t_symbol_table* table);
 t_stack_symbol_table *push_stack_symbol_table(t_stack_symbol_table **stack, t_stack_symbol_table* new_stack);
 t_stack_symbol_table *pop_stack_symbol_table(t_stack_symbol_table **stack);
@@ -166,6 +168,12 @@ t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char 
 t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *id);
 void free_stack(t_stack_symbol_table *stack);
 
-int decl_dot(t_tree *tree, FILE *f, int nb);
-int link_dot(int node_1, int node_2, FILE *f);
+int decl_dot(t_tree *tree, int nb);
+int link_dot(int node_1, int node_2);
+
+// Global variables
+extern int 	 nbNode;
+extern FILE *fileResult_decla;
+extern FILE *fileResult_link;
+extern FILE *fileResult;
 #endif

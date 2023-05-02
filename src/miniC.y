@@ -333,8 +333,7 @@ int main(int argc, char **argv)
 {
 	for (int i = 1; i < argc; i++)
 	{
-		FILE *f_decla, *f_link, *f;
-		char	name_end_file[4096] = {0};
+		char	buffer[4096] = {0};
   	    
 		yyin = fopen(argv[i], "r");
 		if (yyin == NULL)
@@ -342,30 +341,43 @@ int main(int argc, char **argv)
 			fprintf(stderr, "compiler: impossible d'ouvrir le fichier %s\n", argv[i]);
 			continue ; 
 		}
-		// Create two temporary files
-		sprintf(name_end_file, "./%s_decla.inter", argv[i]);
-		printf("%s\n", name_end_file);
-		f_decla = fopen(name_end_file, "w");
-		sprintf(name_end_file, "./%s_link.inter", argv[i]);
-		f_link = fopen(name_end_file, "w");
-		printf("%s\n", name_end_file);
-		
+		// Create the declaration file
+		sprintf(buffer, "./%s_decla.dot", argv[i]);
+		fileResult_decla = fopen(buffer, "w+");
+
+		// Create the link file
+		sprintf(buffer, "./%s_link.dot", argv[i]);
+		fileResult_link = fopen(buffer, "w+");
+
 		// Create the final file
-		sprintf(name_end_file, "./%s.dot", argv[i]);
-		f = fopen(name_end_file, "w");
+		sprintf(buffer, "./%s.dot", argv[i]);
+		fileResult = fopen(buffer, "w+");
 		#ifdef YYDEBUG
 			fprintf(stdout, "\n#compiler: compilation du fichier %s\n", argv[i]);
 		#endif
 		yyparse();
-		fprintf(f, "digraph mon_programme {\n");
-		conver_and_sementic_analys(ast, f_decla, f_link);
+		fprintf(fileResult, "digraph mon_programme {\n");
+		fflush(fileResult);
+		conver_and_sementic_analys(ast);
+
+		int bytesRead;
+		fseek(fileResult_decla, 0, SEEK_SET);
+		while ((bytesRead = fread(buffer, 1, 4096, fileResult_decla)) > 0)
+			fwrite(buffer, 1, bytesRead, fileResult);
+		fseek(fileResult_link, 0, SEEK_SET);
+		while ((bytesRead = fread(buffer, 1, 4096, fileResult_link)) > 0)
+			fwrite(buffer, 1, bytesRead, fileResult);
 		ast = NULL;
 		global_symbol_table = NULL;
-		fprintf(f, "\n}");
-		fclose(f_decla);
-		fclose(f_link);
+		fprintf(fileResult, "\n}");
+		fclose(fileResult);
+		fclose(fileResult_decla);
+		sprintf(buffer, "./%s_decla.dot", argv[i]);
+		remove(buffer);
+		fclose(fileResult_link);
+		sprintf(buffer, "./%s_link.dot", argv[i]);
+		remove(buffer);
 		fclose(yyin);
-		fclose(f);
 	}
 	return 0;
 }

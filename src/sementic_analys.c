@@ -1,5 +1,10 @@
 #import "compiler.h"
 
+int  nbNode = 1;
+FILE *fileResult_decla = 0;
+FILE *fileResult_link  = 0;
+FILE *fileResult       = -1;
+
 void    print_error(char *error, char   *complement)
 {
     if (complement)
@@ -134,14 +139,13 @@ int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack)
     return (1);
 }
 
-int nb_node = 0;
 
-int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, FILE*   f_decla, FILE*  f_link)
+int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int nb)
 {
     int type = -1;
     char *id = NULL;
     int is_pushed_table = 0;
-    int actual_nb_node = ++nb_node;
+    int actual_nb_node = nb;
 
     // Get id and type of the node
     if (!ast || ((t_node*)ast->content) == NULL)
@@ -151,6 +155,12 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, FILE
         if ((t_declaration *)((t_node*)ast->content)->datas)
             id = ((t_declaration*)((t_node*)ast->content)->datas)->name;
         type = ((t_node*)ast->content)->type;
+        if (type != LIST_EXPRESSION_NODE \
+        && type != LIST_INSTRUCTION_NODE \
+        && type != LIST_FUNCTION_NODE    \
+        && type != ELSE_NODE \
+        && type != TAB_INT_DATA_NODE)
+            actual_nb_node = nbNode;
     }
     // Push symbol table if it exist for this type
     if (((t_node *)ast->content)->table)
@@ -158,7 +168,7 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, FILE
         push_stack_symbol_table(&stack, create_stack_symbol_table(((t_node *)ast->content)->table));
         is_pushed_table = 1;
     }
-    decl_dot(ast, f_decla, actual_nb_node);
+    decl_dot(ast, actual_nb_node);
     switch (type) {
         case FUNCTION_NODE:                     
             // Check Type of return
@@ -200,17 +210,17 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, FILE
         default:
             break;
     }
-    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_a, stack, f_decla, f_link), f_link);
-    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_b, stack, f_decla, f_link), f_link);
+    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_a, stack, actual_nb_node));
+    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_b, stack, actual_nb_node));
     if (is_pushed_table)
         pop_stack_symbol_table(&stack);
     return (actual_nb_node);
 }
 
-int conver_and_sementic_analys(t_tree *ast, FILE*   f_decla, FILE*  f_link)
+int conver_and_sementic_analys(t_tree *ast)
 {
     if (ast == NULL)
         return (-1);
     t_stack_symbol_table    *stack = create_stack_symbol_table(((t_node*)ast->content)->table);
-    return (_sementic_analysis_check_rec(ast->f_b, stack, f_decla, f_link));
+    return (_sementic_analysis_check_rec(ast->f_b, stack, 0));
 }

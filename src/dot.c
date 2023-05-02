@@ -1,164 +1,188 @@
 #include "compiler.h"
 
-int decl_dot(t_tree *tree, FILE *f, int nb)
+void    extend_string(char **string1, char *string2)
+{
+    char *tmp;
+
+    tmp = *string1;
+    *string1 = malloc(strlen(*string1) + strlen(string2) + 1);
+    strcpy(*string1, tmp);
+    strcat(*string1, string2);
+    free(tmp);
+}
+
+int decl_dot(t_tree *tree, int nb)
 {
 	int type;
-    
+    char    new_line;
+
     if (!tree || !tree->content)
-        return(nb);
+        return (nb);
+
     type = ((t_node*)tree->content)->type;
     switch (type)
 	{
         case IF_NODE:
-            fprintf(f,"node_%d [shape=diamond label=\"IF\"];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"IF\" shape=diamond];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case RETURN_NODE:
-            printf(f,"\tnode_%d [label=\"RETURN\" shape=trapezium color=blue];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"RETURN\" shape=trapezium color=blue];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case CALL_NODE:
-            fprintf(f,"\tnode_%d [label=\"%s\" shape=septagon];\n",nb,((t_declaration*)((t_node*)tree->content)->datas)->name);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"%s\" shape=septagon];\n",nb,((t_declaration*)((t_node*)tree->content)->datas)->name);
+            fflush(fileResult_decla);
+            break;
 
         case ADD_NODE:
-            fprintf(f,"\tnode_%d [label=\"+\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"+\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case MINUS_NODE:
-            fprintf(f,"\tnode_%d [label=\"-\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"-\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case MULT_NODE:
-            fprintf(f,"\tnode_%d [label=\"*\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"*\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case DIV_NODE:
-            fprintf(f,"\tnode_%d [label=\"/\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"/\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case ASSIGN_NODE:
-            fprintf(f,"\tnode_%d [label=\":=\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\":=\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case RSHIFT_NODE:
-            fprintf(f,"\tnode_%d [label=\">>\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\">>\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case LSHIFT_NODE:
-            fprintf(f,"\tnode_%d [label=\"<<\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"<<\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BAND_NODE:
-            fprintf(f,"\tnode_%d [label=\"&\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"&\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOR_NODE:
-            fprintf(f,"\tnode_%d [label=\"|\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"|\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case NOT_NODE:
-            fprintf(f,"\tnode_%d [label=\"!\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"!\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_EQ_NODE:
-            fprintf(f,"\tnode_%d [label=\"==\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"==\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_L_NODE:
-            fprintf(f,"\tnode_%d [label=\"<\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"<\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_G_NODE:
-            fprintf(f,"\tnode_%d [label=\">\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\">\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_LE_NODE:
-            fprintf(f,"\tnode_%d [label=\"<=\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"<=\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_GE_NODE:
-            fprintf(f,"\tnode_%d [label=\">=\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\">=\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_AND_NODE:
-            fprintf(f,"\tnode_%d [label=\"&&\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"&&\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_OR_NODE:
-            fprintf(f,"\tnode_%d [label=\"||\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"||\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case BOOL_NEQ_NODE:
-            fprintf(f,"\tnode_%d [label=\"!=\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"!=\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case FUNCTION_NODE:
-            fprintf(f, "\tnode_%d [label=\"%s, %d\" shape=invtrapezium color=blue];\n",nb, ((t_declaration*)((t_node*)tree->content)->datas)->name, ((t_declaration*)((t_node*)tree->content)->datas)->type);
-			return(nb);
+            fprintf(fileResult_decla, "\tnode_%d [label=\"%s, %d\" shape=invtrapezium color=blue];\n",nb, ((t_declaration*)((t_node*)tree->content)->datas)->name, ((t_declaration*)((t_node*)tree->content)->datas)->type);
+            fflush(fileResult_decla);
+			break;
 
         case WHILE_NODE:
-            fprintf(f,"\tnode_%d [label=\"WHILE\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"WHILE\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case FOR_NODE:
-            fprintf(f,"\tnode_%d [label=\"FOR\" shape=ellipse];\n",nb);
-            return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [label=\"FOR\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
 		case CONST_NODE:
-			fprintf(f,"\tnode_%d [shape=ellipse label=\"%d\";]\n",nb, *(int*)((t_node*)tree->content)->datas);
-			return(nb);
+			fprintf(fileResult_decla,"\tnode_%d [shape=ellipse label=\"%d\"];\n",nb, *(int*)((t_node*)tree->content)->datas);
+            fflush(fileResult_decla);
+			break;
 
         case VAR_NODE:
-            fprintf(f,"\tnode_%d [shape=ellipse label=\"%s\"];\n",nb,((t_declaration*)((t_node*)tree->content)->datas)->name);
-			return(nb);
+            fprintf(fileResult_decla,"\tnode_%d [shape=ellipse label=\"%s\"];\n",nb,((t_declaration*)((t_node*)tree->content)->datas)->name);
+            fflush(fileResult_decla);
+			break;
 
         case BLOCK_NODE:
-			fprintf(f,"\tnode_%d [label=\"BLOC\" shape=ellipse];\n",nb);
-			return(nb);
-
-        case BLOCK_FUN_NODE:
-
+			fprintf(fileResult_decla,"\tnode_%d [label=\"BLOC\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+			break;
 
         case BREAK_NODE:
-			fprintf(f,"\tnode_%d [label=\"BREAK\" shape=box];\n",nb);
-			return(nb);
+			fprintf(fileResult_decla,"\tnode_%d [label=\"BREAK\" shape=box];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         case SWITCH_NODE:
-			fprintf(f,"\tnode_%d [label=\"SWITCH\" shape=ellipse];\n",nb);
-			return(nb);
+			fprintf(fileResult_decla,"\tnode_%d [label=\"SWITCH\" shape=ellipse];\n",nb);
+            fflush(fileResult_decla);
+            break;
 
         default:
-            printf("%d", type);
+            return (0);
             break;
 	}
-	
+    fflush(fileResult_decla);
+    nbNode++;
+    return (nb);
 }
 
 
-int link_dot(int node_1, int node_2, FILE *f)
+int link_dot(int node_1, int node_2)
 {
-	fprintf(f,"\tnode_%d ->  node_%d\n", node_1, node_2);
+    if (node_1 == 0 || node_2 == 0
+        || node_1 == node_2)
+        return (0);
+	fprintf(fileResult_link,"\tnode_%d ->  node_%d;\n", node_1, node_2);
+    fflush(fileResult_link);
 	return(0);
-}
-
-
-int create_dot(t_tree *tree, FILE *f_decla, FILE *f_link, FILE *f, int nb)
-{
-	char node_parent = decl_dot(tree, f_decla, nb);
-	char node_f1 = decl_dot(tree->f_a, f_decla, nb);
-	char node_f2 = decl_dot(tree->f_b, f_decla, nb);
-	link_dot(node_parent, node_f1, f_link);
-	link_dot(node_parent, node_f2, f_link);
-	create_dot(tree->f_a, f_decla, f_link, f, nb);
-	create_dot(tree->f_b, f_decla, f_link, f, nb);
-	fclose(f_decla);
-	fclose(f_link);
-	char ctn;
-	f_decla = fopen("./decla.txt", "r");
-	f_link = fopen("./link.txt", "r");
-	while((ctn = getc(f_decla)) != EOF)
-        putc(ctn, f);
-	while((ctn = getc(f_link)) != EOF)
-        putc(ctn, f);
 }
