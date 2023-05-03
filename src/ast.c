@@ -208,6 +208,12 @@ void print_type(int type)
         case TAB_INT_DATA_NODE:
             printf("TAB_INT_DATA_NODE ");
             break; 
+        case FOR_DATA_NODE:
+            printf("FOR_DATA_NODE");
+            break;
+        case IF_DATA_NODE:
+            printf("IF_DATA_NODE");
+            break;
         default:
             printf("%d", type);
             break;
