@@ -1,4 +1,4 @@
-#import "compiler.h"
+#include "compiler.h"
 
 int  nbNode = 1;
 FILE *fileResult_decla = 0;
@@ -186,7 +186,9 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
         && type != LIST_INSTRUCTION_NODE \
         && type != LIST_FUNCTION_NODE    \
         && type != ELSE_NODE \
-        && type != TAB_INT_DATA_NODE)
+        && type != TAB_INT_DATA_NODE \
+        && type != IF_DATA_NODE \
+        && type != FOR_DATA_NODE)
             actual_nb_node = nbNode;
     }
     // Push symbol table if it exist for this type
