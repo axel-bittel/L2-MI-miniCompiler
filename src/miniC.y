@@ -117,6 +117,10 @@ fonction	:
 			func->type = $1;
 			func->cst = get_number_args_decl($4);
 			t_tree *res = $8;
+			if (!res)
+				res = create_parent_tree(NULL, NULL, FUNCTION_NODE, func);
+			((t_node*)res->content)->datas = func;
+			((t_node*)res->content)->type = FUNCTION_NODE;
 			((t_node*)res->content)->datas = func;
 			((t_node*)res->content)->type = FUNCTION_NODE;
 			t_symbol_table	*table_function = ((t_node*)res->content)->table;
@@ -250,10 +254,7 @@ variable :
 																	t_declaration	*dec = malloc(sizeof(t_declaration));
 																	dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
 																	dec->type = TYPE_TAB_INT;
-																	t_declaration	*dec_id = malloc(sizeof(t_declaration));
-																	dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
-																	dec->type = TYPE_INT; // FAKE
-																	$$ = create_parent_tree(create_parent_tree(NULL, NULL, VAR_NODE, dec_id), $3, VAR_NODE, dec);		
+																	$$ = create_parent_tree($1, create_parent_tree($3, NULL, TAB_INT_DATA_NODE, NULL), VAR_NODE, dec);		
 																}
 																else if (((t_declaration*)((t_node *)sub->content)->datas)->type == TYPE_TAB_INT)
 																{
@@ -273,7 +274,16 @@ expression	:
 														t_tree *node3 = $3;
 														$$ = create_parent_tree(node1, node3, type, NULL);
 													}
-	|	MOINS expression							{ $$ = create_parent_tree(NULL, $2, MINUS_NODE, NULL);}
+	|	MOINS expression							{ 
+														t_tree	*exp = $2;
+														if ((t_declaration*)((t_node*)exp->content)->type == CONST_NODE)
+														{
+															*(int*)((t_node*)exp->content)->datas *= -1;
+															$$ = exp;
+														}
+														else
+															$$ = create_parent_tree(NULL, $2, MINUS_NODE, NULL);
+													}
 	|	CONSTANTE									{
 														int *constante = malloc(sizeof(int));
 														*constante = yylval.inttype;

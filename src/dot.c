@@ -148,7 +148,10 @@ int decl_dot(t_tree *tree, int nb)
 			break;
 
         case VAR_NODE:
-            fprintf(fileResult_decla,"\tnode_%d [shape=ellipse label=\"%s\"];\n",nb,((t_declaration*)((t_node*)tree->content)->datas)->name);
+            if (((t_declaration*)((t_node*)tree->content)->datas)->type == TYPE_INT)
+                fprintf(fileResult_decla,"\tnode_%d [shape=ellipse label=\"%s\"];\n",nb,((t_declaration*)((t_node*)tree->content)->datas)->name);
+            else
+                fprintf(fileResult_decla,"\tnode_%d [shape=ellipse label=\"TAB\"];\n",nb);
             fflush(fileResult_decla);
 			break;
 

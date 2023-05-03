@@ -132,7 +132,7 @@ void print_type(int type);
 
 // SEMENTIC ANALYSIS
 void    print_error(char *error, char   *complement);
-int check_tab_dimention(t_tree *tree);
+int check_tab_dimention(t_symbol_table_elem *elem, t_tree *tree, t_stack_symbol_table *stack);
 int get_type_expression(t_tree  *tree, t_stack_symbol_table *stack);
 int sementic_analysis_check_return(t_tree *ast, t_stack_symbol_table *stack, int type_return);
 int get_number_args(t_tree *ast);
