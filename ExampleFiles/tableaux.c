@@ -4,5 +4,5 @@ int tab[300];
 
 int main() {
   tab[3] = tab[200];
-  tab[400] = tab[0];
+  tab[299] = tab[0];
 }

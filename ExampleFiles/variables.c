@@ -1,8 +1,6 @@
 /* TEST VARIABLES MINIC */
 
-int a, v, e;
-int a, c;
-int a, c;
+int a, b;
 int main() {
   int a, b;
   a = 0;

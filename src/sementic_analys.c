@@ -225,7 +225,7 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
                 return (print_error("Variable not found :", ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name), -1);
             // if the expression is in good type
             if (get_type_expression(ast->f_b, stack) != TYPE_INT)
-                return (print_error("Expressions have bad type\n", NULL), -1);
+                return (print_error("Assignation expressions have bad type\n", NULL), -1);
             if (elem->type_identificateur != TYPE_VAR && elem->type_identificateur != TYPE_ARG)
                 return (print_error("It is not a variable\n", NULL), -1);
             break;
@@ -244,11 +244,11 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
         case IF_NODE:
             // Check if the expression is in good type
             if ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->type != IF_NODE \
-                && (get_type_expression(ast->f_a, stack) != TYPE_INT))
-                    return (print_error("Expressions have bad type\n", NULL), -1);
+                && (get_type_expression(((t_tree*)ast->f_a)->f_a, stack) != TYPE_INT))
+                    return (print_error("Condition expressions have bad type\n", NULL), -1);
             else if ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->type == IF_NODE \
                 && (get_type_expression(((t_tree*)ast->f_a)->f_a, stack) != TYPE_INT))
-                    return (print_error("Expressions have bad type\n", NULL), -1);
+                    return (print_error("Condition expressions have bad type\n", NULL), -1);
             break; 
         default:
             break;

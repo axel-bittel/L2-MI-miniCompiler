@@ -1,11 +1,19 @@
-SRC_DIR			=	./src
-INC_DIR			=	./include
 CC				=	gcc
 RM				=	rm -f
-
 UNAME_S			:=	$(shell uname -s)
 
+SRC_DIR			=	./src
+INC_DIR			=	./include
+TESTS_DIR		= 	./ExampleFiles
+
+TESTS_FILES 	= 	${shell ls ExampleFiles/*.c}
+NAME			=	compiler
+
+HEADER			=	-I${INC_DIR} -I./
+LDFLAGS			=	-L${SRC_DIR}
+OBJS			=	${SRCS:.c=.o}
 CFLAGS			=	-g 
+
 PARSER_FILE		=	${SRC_DIR}/miniC.y
 LEXER_FILE		=	${SRC_DIR}/lexer.l
 SRCS			=	${SRC_DIR}/ft_tree/ft_treeadd_f.c\
@@ -18,12 +26,7 @@ SRCS			=	${SRC_DIR}/ft_tree/ft_treeadd_f.c\
 					${SRC_DIR}/sementic_symbol_table.c\
 					${SRC_DIR}/dim.c\
 					${SRC_DIR}/dot.c
-TESTS_FILES 	= 	${shell ls ExampleFiles/*.c}
-NAME			=	compiler
 
-HEADER		=	-I${INC_DIR} -I./
-LDFLAGS		=	-L${SRC_DIR}
-OBJS				=	${SRCS:.c=.o}
 %.o				:	%.c
 					@echo "~~~~~~~ MAKE PROJECT ~~~~~~~~"
 					${CC} -c ${CFLAGS} ${HEADER} ${FSFLAGS} -o $@ $< -g
@@ -43,6 +46,7 @@ parser		:
 clean :
 				@echo "~~~~~~~~~~ CLEAN ~~~~~~~~~~~~"
 				${RM}  ${OBJS} ./lex.yy.c miniC.tab.c ./y.tab.c ./y.tab.o
+				${RM} ${TESTS_DIR}/*.dot
 
 fclean		:	clean
 				@echo "~~~~~~~~~~ FCLEAN ~~~~~~~~~~"
