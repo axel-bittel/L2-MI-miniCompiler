@@ -128,7 +128,12 @@ int decl_dot(t_tree *tree, int nb)
             break;
 
         case FUNCTION_NODE:
-            fprintf(fileResult_decla, "\tnode_%d [label=\"%s, %d\" shape=invtrapezium color=blue];\n",nb, ((t_declaration*)((t_node*)tree->content)->datas)->name, ((t_declaration*)((t_node*)tree->content)->datas)->type);
+            char    *res;
+            if (((t_declaration*)((t_node*)tree->content)->datas)->type == TYPE_INT)
+                res = "int";
+            else
+                res = "void";
+            fprintf(fileResult_decla, "\tnode_%d [label=\"%s, %s\" shape=invtrapezium color=blue];\n",nb, ((t_declaration*)((t_node*)tree->content)->datas)->name, res);
             fflush(fileResult_decla);
 			break;
 

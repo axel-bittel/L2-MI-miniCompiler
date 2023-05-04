@@ -26,7 +26,7 @@
 %left OP
 %left REL
 %start programme
-%type <tree> programme liste_declarations liste_fonctions declaration liste_declarateurs declarateur fonction liste_parms parm liste_instructions instruction iteration selection saut affectation bloc appel variable expression liste_expressions condition function_param parm_call_function_list_expression case_instruction case_selection case_liste_instructions
+%type <tree> programme liste_declarations liste_fonctions declaration liste_declarateurs declarateur fonction liste_parms parm liste_instructions instruction iteration selection saut affectation bloc appel variable expression liste_expressions condition function_param parm_call_function_list_expression case_instruction case_selection case_liste_instructions const
 %type <inttype>	type binary_op binary_rel binary_comp
 %type <id> name
 %%
@@ -208,14 +208,19 @@ case_selection :
 	|	SWITCH '(' expression ')' instruction				{ 	$$ = create_parent_tree($3, $5, SWITCH_NODE, NULL);		}
 ;
 
+const:
+	CONSTANTE	{
+					int *constante = malloc(sizeof(int));
+					*constante = yylval.inttype;
+					$$ = create_parent_tree(NULL, NULL, CONST_NODE, constante);
+				}
+
 selection :	
 		IF '(' condition ')' instruction %prec THEN			{ 	$$ = create_parent_tree($3, $5, IF_NODE, NULL);			}
 	|	IF '(' condition ')' instruction ELSE instruction	{ 	$$ = create_parent_tree(create_parent_tree($3,$5,IF_DATA_NODE, NULL),create_parent_tree($7, NULL, ELSE_NODE, NULL),IF_NODE,NULL); }
 	|	SWITCH '(' expression ')' instruction				{ 	$$ = create_parent_tree($3, $5, SWITCH_NODE, NULL);		}
-	|	CASE CONSTANTE ':' case_liste_instructions			{ 
-																int	*constante = malloc(sizeof(int));
-																*constante = yylval.inttype;
-																$$ = create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), $4, CASE_NODE, constante);
+	|	CASE const ':' case_liste_instructions			{ 
+																$$ = create_parent_tree($2, $4, CASE_NODE, NULL);
 															}
 	|	DEFAULT ':' case_liste_instructions					{	$$ = create_parent_tree(NULL, $3, DEFAULT_NODE, NULL);	}
 ;

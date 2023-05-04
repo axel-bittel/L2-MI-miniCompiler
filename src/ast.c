@@ -33,6 +33,10 @@ void	print_tree(t_tree	*tree, int i)
 	if (tree)
 	{
 		print_type(((t_node *)tree->content)->type);
+        if (((t_node *)tree->content)->type == CONST_NODE)
+        {
+            printf("(%d)", *(int*)((t_node *)tree->content)->datas);
+        }
 		printf("\n");
 	}
     else
@@ -42,7 +46,7 @@ void	print_tree(t_tree	*tree, int i)
     j = i;
 	while (j-- > 0)
 		printf("| ");
-		printf("Gauche->");
+	printf("Gauche->");
     if (tree->f_a)
 		print_tree(tree->f_a, i + 1);
     else

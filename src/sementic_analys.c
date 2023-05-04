@@ -250,6 +250,13 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
                 && (get_type_expression(((t_tree*)ast->f_a)->f_a, stack) != TYPE_INT))
                     return (print_error("Condition expressions have bad type\n", NULL), -1);
             break; 
+        case SWITCH_NODE:
+            // Check if the expression is in good type
+            if (!ast->f_a)
+                return(print_error("Switch must have only one expression\n", NULL), -1);
+            if (get_type_expression(ast->f_a, stack) != TYPE_INT)
+                return (print_error("Condition expressions have bad type\n", NULL), -1);
+            break;
         default:
             break;
     }
