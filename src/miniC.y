@@ -41,8 +41,8 @@ programme :
 																	table = create_symbol_table(SYMBOL_TYPE_GLOBAL);
 																((t_node*)end->content)->table = table;
 																symbol_list_declaration_rec($1, table);
+																free_tree($1);
 																symbol_list_fonction_rec($2, table);
-																// print_tree(end, 0);
 																ast = end;
 																$$ = end;
 															}
@@ -78,7 +78,7 @@ declarateur :
 		IDENTIFICATEUR										{
 																t_declaration* dec = malloc(sizeof(t_declaration));
 																dec->type = TYPE_INT;
-																dec->name = yylval.id;
+																dec->name = strdup(yylval.id);
 																$$ = create_parent_tree(NULL, NULL, VAR_DECLARATEUR_NODE, dec);
 															
 															}
@@ -90,9 +90,9 @@ declarateur :
 																if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_INT)
 																{
 																	t_declaration	*dec = malloc(sizeof(t_declaration));
-																	dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
+																	dec->name = strdup(((t_declaration*)((t_node*)sub->content)->datas)->name);
 																	dec->type = TYPE_TAB_INT;
-																	$$ = create_parent_tree(create_parent_tree(NULL, NULL, VAR_NODE, dec),create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, TAB_INT_DATA_NODE, NULL), VAR_DECLARATEUR_NODE, dec);
+																	$$ = create_parent_tree($1,create_parent_tree(create_parent_tree(NULL, NULL, CONST_NODE, constante), NULL, TAB_INT_DATA_NODE, NULL), VAR_DECLARATEUR_NODE, dec);
 																}
 																else if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_TAB_INT)
 																{
@@ -121,15 +121,15 @@ fonction :
 				res = create_parent_tree(NULL, NULL, FUNCTION_NODE, func);
 			((t_node*)res->content)->datas = func;
 			((t_node*)res->content)->type = FUNCTION_NODE;
-			((t_node*)res->content)->datas = func;
-			((t_node*)res->content)->type = FUNCTION_NODE;
 			t_symbol_table	*table_function = ((t_node*)res->content)->table;
 			if (!table_function)
 			{
 				table_function = create_symbol_table(SYMBOL_TYPE_FUNCTION);
 			}
 			symbol_list_declaration_rec($7, table_function);
+			free_tree($7);
 			symbol_list_param_rec($4, table_function);
+			free_tree($4);
 			((t_node*)res->content)->table = table_function;
 			$$ = res;
 		}
@@ -242,6 +242,7 @@ bloc :
 																t_symbol_table	*table = create_symbol_table(SYMBOL_TYPE_LOCAL);
 																((t_node*)res->content)->table = table;
 																symbol_list_declaration_rec($2, table);
+																free_tree($2);
 																$$ = $3;
 															}
 ;
@@ -267,9 +268,9 @@ variable :
 																if (((t_declaration*)((t_node*)sub->content)->datas)->type == TYPE_INT)
 																{
 																	t_declaration	*dec = malloc(sizeof(t_declaration));
-																	dec->name = ((t_declaration*)((t_node*)sub->content)->datas)->name;
+																	dec->name = strdup(((t_declaration*)((t_node*)sub->content)->datas)->name);
 																	dec->type = TYPE_TAB_INT;
-																	$$ = create_parent_tree($1, create_parent_tree($3, NULL, TAB_INT_DATA_NODE, NULL), VAR_NODE, dec);		
+																	$$ = create_parent_tree(sub, create_parent_tree($3, NULL, TAB_INT_DATA_NODE, NULL), VAR_NODE, dec);		
 																}
 																else if (((t_declaration*)((t_node *)sub->content)->datas)->type == TYPE_TAB_INT)
 																{
@@ -291,7 +292,7 @@ expression	:
 													}
 	|	MOINS expression							{ 
 														t_tree	*exp = $2;
-														if ((t_declaration*)((t_node*)exp->content)->type == CONST_NODE)
+														if (((t_node*)exp->content)->type == CONST_NODE)
 														{
 															*(int*)((t_node*)exp->content)->datas *= -1;
 															$$ = exp;
@@ -356,15 +357,75 @@ binary_comp :
 
 void yyerror(char *s)
 {
-	printf("erreur : %s, ligne %d\n", s, yylineno);
-	exit (1);
+	printf("compiler: %s, ligne %d\n", s, yylineno);
+	is_error = 1;
+}
+
+int	create_files(char	*name_file)
+{
+	char	buffer[4096] = {0};
+
+	// Create the declaration file
+	sprintf(buffer, "./%s_decla.dot", name_file);
+	fileResult_decla = fopen(buffer, "w+");
+	if (fileResult_decla == -1)
+		return (0);
+
+	// Create the link file
+	sprintf(buffer, "./%s_link.dot", name_file);
+	fileResult_link = fopen(buffer, "w+");
+	if (fileResult_link == -1)
+		return (0);
+
+	// Create the final file
+	sprintf(buffer, "./%s.dot", name_file);
+	fileResult = fopen(buffer, "w+");
+	if (fileResult == -1)
+		return (0);
+}
+
+void	generate_result_file()
+{
+	char	buffer[4096] = {0};
+
+	int bytesRead;
+	fseek(fileResult_decla, 0, SEEK_SET);
+	while ((bytesRead = fread(buffer, 1, 4096, fileResult_decla)) > 0)
+		fwrite(buffer, 1, bytesRead, fileResult);
+	fseek(fileResult_link, 0, SEEK_SET);
+	while ((bytesRead = fread(buffer, 1, 4096, fileResult_link)) > 0)
+		fwrite(buffer, 1, bytesRead, fileResult);
+	fprintf(fileResult, "\n}");
+}
+
+void	cleanup_data(char	*name_file)
+{
+	char	buffer[4096] = {0};
+
+	free_tree(ast);
+	free_symbol_table(global_symbol_table);
+	fclose(fileResult);
+	fclose(fileResult_decla);
+	sprintf(buffer, "./%s_decla.dot", name_file);
+	remove(buffer);
+	fclose(fileResult_link);
+	sprintf(buffer, "./%s_link.dot", name_file);
+	remove(buffer);
+	if (is_error)
+	{
+		sprintf(buffer, "./%s.dot", name_file);
+		remove(buffer);
+	}
+	fclose(yyin);
+	ast = NULL;
+	global_symbol_table = NULL;
+	is_error = 0;
 }
 
 int main(int argc, char **argv)
 {
 	for (int i = 1; i < argc; i++)
 	{
-		char	buffer[4096] = {0};
   	    
 		yyin = fopen(argv[i], "r");
 		if (yyin == NULL)
@@ -372,43 +433,18 @@ int main(int argc, char **argv)
 			fprintf(stderr, "compiler: impossible d'ouvrir le fichier %s\n", argv[i]);
 			continue ; 
 		}
-		// Create the declaration file
-		sprintf(buffer, "./%s_decla.dot", argv[i]);
-		fileResult_decla = fopen(buffer, "w+");
 
-		// Create the link file
-		sprintf(buffer, "./%s_link.dot", argv[i]);
-		fileResult_link = fopen(buffer, "w+");
-
-		// Create the final file
-		sprintf(buffer, "./%s.dot", argv[i]);
-		fileResult = fopen(buffer, "w+");
 		#ifdef YYDEBUG
 			fprintf(stdout, "\n#compiler: compilation du fichier %s\n", argv[i]);
 		#endif
 		yyparse();
+		create_files(argv[i]);
 		fprintf(fileResult, "digraph mon_programme {\n");
 		fflush(fileResult);
 		conver_and_sementic_analys(ast);
-
-		int bytesRead;
-		fseek(fileResult_decla, 0, SEEK_SET);
-		while ((bytesRead = fread(buffer, 1, 4096, fileResult_decla)) > 0)
-			fwrite(buffer, 1, bytesRead, fileResult);
-		fseek(fileResult_link, 0, SEEK_SET);
-		while ((bytesRead = fread(buffer, 1, 4096, fileResult_link)) > 0)
-			fwrite(buffer, 1, bytesRead, fileResult);
-		ast = NULL;
-		global_symbol_table = NULL;
-		fprintf(fileResult, "\n}");
-		fclose(fileResult);
-		fclose(fileResult_decla);
-		sprintf(buffer, "./%s_decla.dot", argv[i]);
-		remove(buffer);
-		fclose(fileResult_link);
-		sprintf(buffer, "./%s_link.dot", argv[i]);
-		remove(buffer);
-		fclose(yyin);
+		if (!is_error)
+			generate_result_file();
+		cleanup_data(argv[i]);
 	}
 	return 0;
 }

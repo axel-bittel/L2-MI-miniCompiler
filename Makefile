@@ -7,6 +7,7 @@ INC_DIR			=	./include
 TESTS_DIR		= 	./ExampleFiles
 
 TESTS_FILES 	= 	${shell ls ExampleFiles/*.c}
+TESTS_ERROR_FILES = 	${shell ls TestErrorFiles/*/*.c}
 NAME			=	compiler
 
 HEADER			=	-I${INC_DIR} -I./
@@ -55,7 +56,11 @@ fclean		:	clean
 
 re			:	fclean all
 
-test		:
+test : test_good test_error
+
+test_good	:
 				./${NAME}  ${TESTS_FILES}
+test_error  :
+				./${NAME}  ${TESTS_ERROR_FILES}
 
 .PHONY		:	all clean fclean re

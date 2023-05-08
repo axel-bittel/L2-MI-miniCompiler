@@ -129,6 +129,7 @@ typedef struct s_list_dimension
 // AST 
 t_node	*create_new_node(int	type, void	*data);
 t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data);
+void    free_tree(t_tree    *tree);
 void	print_tree(t_tree	*tree, int i);
 void print_type(int type);
 
@@ -175,6 +176,7 @@ int link_dot(int node_1, int node_2);
 
 // Global variables
 extern int 	 nbNode;
+extern char	 is_error;
 extern FILE *fileResult_decla;
 extern FILE *fileResult_link;
 extern FILE *fileResult;

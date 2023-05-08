@@ -10,7 +10,9 @@ S [ \t\v\n\f]
 
 %%
 
-{S}                     { }
+{S}                     {   if (yytext[0] == '\n')
+                                yylineno++;
+                        }
 "/*"[^"*/"]*"*/"        { }
 "extern"                { return EXTERN;    }    
 "int"                   { return INT;       }
@@ -55,6 +57,5 @@ S [ \t\v\n\f]
 
 {D}+[{L}\(\{\[]+        {   yyerror(); }
 {L}+(^[{L}|{D}])+       {   yyerror(); }
-.                       {   yyerror(); }
-
+.                       {   yyerror("lexical error"); }
 %%

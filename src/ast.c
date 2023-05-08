@@ -20,9 +20,46 @@ t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data)
 	new_tree = ft_treenew((void *)create_new_node(type, data));
 	new_tree->f_a = sub_g;
 	new_tree->f_b = sub_d;
-	//print_tree(new_tree);
-	//printf("---------------------------------\n");
 	return (new_tree);
+}
+
+void    free_node(t_node    *node)
+{
+    if (node->datas)
+    {
+        switch (node->type)
+        {
+            case FUNCTION_NODE:
+            case VAR_NODE:
+            case CALL_NODE:
+            case ARG_NODE:
+            case VAR_DECLARATEUR_NODE:
+                if(((t_declaration *)node->datas)->name)
+                    free (((t_declaration *)node->datas)->name);
+                break;
+        }
+        if (node->table)
+            free_symbol_table(node->table);
+        free(node->datas);
+    }
+    free(node);
+}
+
+void    free_tree(t_tree    *tree)
+{
+    if (tree)
+    {
+        // Free son
+        if (tree->f_a)
+            free_tree(tree->f_a);
+        if (tree->f_b)
+            free_tree(tree->f_b);
+
+        //Free actual tree
+        if (tree->content)
+            free_node((t_node *)tree->content);
+        free(tree);
+    }
 }
 
 void	print_tree(t_tree	*tree, int i)
