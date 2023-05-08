@@ -140,6 +140,7 @@ fonction :
 			if (!global_symbol_table)
 				global_symbol_table = create_symbol_table(SYMBOL_TYPE_GLOBAL);
 			t_symbol_table_elem *new_elem = create_symbol_table_element($3, $2, TYPE_FUNCTION, get_number_args_decl($5), 0);
+			free_tree($5);
 			add_element_in_symbol_table(global_symbol_table, new_elem);
 			$$ = (t_tree*)0;
 		}

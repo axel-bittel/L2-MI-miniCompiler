@@ -127,7 +127,10 @@ int sementic_analysis_check_return(t_tree *ast, t_stack_symbol_table *stack, int
     // If the node has symbol table, push it 
     if (((t_node *)ast->content)->table && \
         (((t_node *)ast->content)->type != TYPE_FUNCTION))
+    {
         push_stack_symbol_table(&stack, create_stack_symbol_table(((t_node *)ast->content)->table));
+        is_pushed_table = 1;
+    }
 
     // Call for others nodes and catch errors
     int res1 = sementic_analysis_check_return(ast->f_a, stack, type_return);
@@ -281,8 +284,14 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
 
 int conver_and_sementic_analys(t_tree *ast)
 {
+    int res;
+    t_stack_symbol_table    *stack;
+
     if (ast == NULL)
         return (-1);
-    t_stack_symbol_table    *stack = create_stack_symbol_table(((t_node*)ast->content)->table);
-    return (_sementic_analysis_check_rec(ast->f_b, stack, 0));
+
+    stack = create_stack_symbol_table(((t_node*)ast->content)->table);
+    res = _sementic_analysis_check_rec(ast->f_b, stack, 0);
+    free_stack(stack);
+    return (res);
 }
