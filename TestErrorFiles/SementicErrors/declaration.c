@@ -5,9 +5,10 @@ int fonction2(int a, int b){
 }
 
 void main(){
-    a = 2; //Var not declared
-    int x:
+    int x;
     int y;
-    fonction (x,y); //function not declared
-    fonction2 (s,t); //args not declared
+
+    a = 2; /*Var not declared*/
+    fonction (x,y); /* function not declared */
+    fonction2 (s,t); /* args not declared */
 }

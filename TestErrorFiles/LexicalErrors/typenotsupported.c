@@ -1,7 +1,7 @@
 char r;
 int a;
-a = "Test";
 
 int main (){
+    a = "Test";
     return (0);
 }

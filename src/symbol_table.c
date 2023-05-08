@@ -18,7 +18,7 @@ t_symbol_table_elem  *create_symbol_table_element(char *name, char type, char ty
     t_symbol_table_elem* elem;
 
     elem = (t_symbol_table_elem *)malloc(sizeof(t_symbol_table_elem));
-    elem->name = name;
+    elem->name = strdup(name);
     elem->type = type;
     elem->type_identificateur = type_symbol;
     elem->nb_args = nb_args;
@@ -52,10 +52,15 @@ void    free_symbol_table(t_symbol_table* table)
     t_symbol_table_elem *act_elem;
     t_symbol_table_elem *next_elem;
 
+    if (!table)
+        return ;
     act_elem = table->begin;
     while (act_elem)
     {
         next_elem = act_elem->next;
+        if (act_elem->list_dimension)
+            free_list_dim(act_elem->list_dimension);
+        free(act_elem->name);
         free(act_elem);
         act_elem = next_elem;
     }

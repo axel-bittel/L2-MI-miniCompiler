@@ -4,7 +4,7 @@ int f (int a, int b){
     return(0);
 }
 
-int f (){ //double declaration with the same type
+int f (){ /* double declaration with the same type */
     return (1);
 }
 
@@ -12,6 +12,8 @@ int f2 (int a, int b){
     return(0);
 }
 
-void f2 (int c){ //double declaration with a different type
+void f2 (int c){ /* double declaration with a different type */
     printd(c);
+    f(1,2);
+    f2(1,2);
 }

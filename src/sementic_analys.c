@@ -2,17 +2,27 @@
 #include <stdio.h>
 
 int  nbNode = 1;
+char is_error = 0;
 FILE *fileResult_decla = 0;
 FILE *fileResult_link  = 0;
 FILE *fileResult       = -1;
 
 void    print_error(char *error, char   *complement)
 {
-    if (complement)
-        printf("%s\n", error);
+    if (!complement)
+        printf("compiler: error: %s\n", error);
     else
-        printf("%s %s\n", error, complement);
-    exit (1);
+        printf("compiler: error: %s %s\n", error, complement);
+    is_error = 1;
+}
+
+void    print_warning(char *error, char   *complement)
+{
+    if (!complement)
+        printf("compiler: warning: %s\n", error);
+    else
+        printf("compiler: warning: %s %s\n", error, complement);
+    is_error = 1;
 }
 
 int check_tab_dimention(t_symbol_table_elem *elem, t_tree *tree, t_stack_symbol_table *stack)
@@ -166,7 +176,6 @@ int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack)
     return (1);
 }
 
-
 int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int nb)
 {
     int type = -1;
@@ -204,43 +213,47 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
             // Check Type of return
             int return_error = sementic_analysis_check_return(ast, \
             stack, ((t_declaration *)((t_node*)ast->content)->datas)->type);
-            // Maybe it is not obligatory => for now always true
-            return_error = 1;
             if (return_error == -1 || 
                 (((t_declaration*)((t_node*)ast->content)->datas)->type == TYPE_INT && return_error == 0))
-                return (print_error("Return has bad type\n", NULL), -1);
+                    print_warning("Return has bad type\n", NULL);
             break;
         case VAR_NODE:
             // Find in symbol table
             if (!(elem = find_element_by_id_stack(stack, id)))
-                return (print_error("Variable not found :", id), -1);
+                print_error("Variable not found :", id);
             // Check if the type and dimensiosn are good
             if (((t_declaration*)((t_node*)ast->content)->datas)->type == TYPE_TAB_INT \
                 && !check_tab_dimention(elem, ast, stack))
-                return (-1);
+                    print_error("Bad type:", id);
             break;
         case ASSIGN_NODE:
             elem = find_element_by_id_stack(stack, ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name);
 
             if (!elem)
-                return (print_error("Variable not found :", ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name), -1);
+            {
+                print_error("Variable not declared in this scope :", ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name);
+                break;
+            }
             // if the expression is in good type
             if (get_type_expression(ast->f_b, stack) != TYPE_INT)
-                return (print_error("Assignation expressions have bad type\n", NULL), -1);
+                print_error("Assignation expressions have bad type\n", NULL);
             if (elem->type_identificateur != TYPE_VAR && elem->type_identificateur != TYPE_ARG)
-                return (print_error("It is not a variable\n", NULL), -1);
+                print_error("It is not a variable\n", NULL);
             break;
         case CALL_NODE:
             // If the function is not declared
             if (!find_element_by_id_stack(stack, id))
-                return (print_error("function not exist\n", NULL), -1);
+            {
+                print_error("Function not exist :", id);
+                break;
+            }
             // Bad number of args
             t_symbol_table_elem *fun_elem = find_element_by_id_stack(stack, id);
             if (get_number_args(ast) != fun_elem->nb_args)
-                return (print_error("Bad number argument for the function \n", NULL), -1);
+                print_error("Bad number argument for the function \n", NULL);
             // Bad type of args
             if (is_args_type_valid(ast->f_b, stack) == -1)
-                return (print_error("Bad type of argument\n", NULL),-1);
+                print_error("Bad type of argument\n", NULL);
             break;
         case IF_NODE:
             // Check if the expression is in good type
@@ -249,12 +262,12 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
                     return (print_error("Condition expressions have bad type\n", NULL), -1);
             else if ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->type != IF_DATA_NODE \
                 && (get_type_expression((t_tree*)ast->f_a, stack) != TYPE_INT))
-                    return (print_error("Condition expressions have bad type\n", NULL), -1);
+                    print_error("Condition expressions have bad type\n", NULL);
             break; 
         case SWITCH_NODE:
             // Check if the expression is in good type
             if (get_type_expression(ast->f_a, stack) != TYPE_INT)
-                return (print_error("Condition expressions have bad type\n", NULL), -1);
+                print_error("Condition expressions have bad type\n", NULL);
             break;
         default:
             break;
