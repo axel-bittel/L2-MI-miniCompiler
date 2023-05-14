@@ -180,4 +180,6 @@ extern char	 is_error;
 extern FILE *fileResult_decla;
 extern FILE *fileResult_link;
 extern FILE *fileResult;
+extern t_tree	*ast;
+extern t_symbol_table	*global_symbol_table;
 #endif

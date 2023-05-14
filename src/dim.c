@@ -26,28 +26,14 @@ t_list_dimension *push_back_list_dim(t_list_dimension *list, int n)
     return (list);
 }
 
-t_list_dimension *pop_back_list_dim(t_list_dimension *list)
-{
-    t_list_dimension *tmp;
-    t_list_dimension *begin = list;
-    if (list == NULL)
-        return (NULL);
-    while (list->next)
-    {
-        tmp = list;
-        list = (list)->next;
-    }
-    tmp->next = 0;
-    free(list);
-    return (begin);
-}
-
 void free_list_dim(t_list_dimension *list)
 {
+    t_list_dimension *next;
     t_list_dimension *tmp = list;
     while (tmp)
     {
-        pop_back_list_dim(tmp);
+        next = tmp->next;
+        free(tmp);
+        tmp = next;
     }
-    free (list);
 }

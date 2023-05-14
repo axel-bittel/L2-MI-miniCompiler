@@ -6,6 +6,7 @@ S [ \t\v\n\f]
 %{
     #include <string.h>
     #include "compiler.h"
+
 %}
 
 %%

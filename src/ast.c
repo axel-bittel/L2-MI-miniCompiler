@@ -38,10 +38,10 @@ void    free_node(t_node    *node)
                     free (((t_declaration *)node->datas)->name);
                 break;
         }
-        if (node->table)
-            free_symbol_table(node->table);
         free(node->datas);
     }
+    if (node->table)
+        free_symbol_table(node->table);
     free(node);
 }
 

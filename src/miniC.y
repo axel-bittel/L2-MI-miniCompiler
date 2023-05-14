@@ -4,8 +4,8 @@
 	#include <unistd.h>
 	#define YYDEBUG 1
 
-	t_tree	*ast;
-	t_symbol_table	*global_symbol_table;
+	t_tree	*ast = NULL;
+	t_symbol_table	*global_symbol_table = NULL;
 %}
 
 %union	{
@@ -79,6 +79,7 @@ declarateur :
 																t_declaration* dec = malloc(sizeof(t_declaration));
 																dec->type = TYPE_INT;
 																dec->name = strdup(yylval.id);
+																free (yylval.id);
 																$$ = create_parent_tree(NULL, NULL, VAR_DECLARATEUR_NODE, dec);
 															
 															}
@@ -106,7 +107,11 @@ declarateur :
 ;
 
 name :
-		IDENTIFICATEUR										{	$$ = yylval.id;		}
+		IDENTIFICATEUR										{	
+																char	*id = strdup(yylval.id);
+																free (yylval.id);
+																$$ = id;
+															}
 ;
 
 fonction :	
@@ -141,6 +146,7 @@ fonction :
 				global_symbol_table = create_symbol_table(SYMBOL_TYPE_GLOBAL);
 			t_symbol_table_elem *new_elem = create_symbol_table_element($3, $2, TYPE_FUNCTION, get_number_args_decl($5), 0);
 			free_tree($5);
+			free($3);
 			add_element_in_symbol_table(global_symbol_table, new_elem);
 			$$ = (t_tree*)0;
 		}
@@ -164,7 +170,8 @@ liste_parms :
 parm :	
 		INT IDENTIFICATEUR									{ 
 																t_declaration *arg = malloc(sizeof(t_declaration));
-																arg->name = yylval.id;
+																arg->name = strdup(yylval.id);
+																free (yylval.id);
 																arg->type = TYPE_INT;
 																$$ = create_parent_tree(NULL, NULL, ARG_NODE, arg);
 															}
@@ -259,7 +266,8 @@ appel :
 variable :	
 		IDENTIFICATEUR										{
 																t_declaration	*dec = malloc(sizeof(t_declaration));
-																dec->name = yylval.id;
+																dec->name = strdup(yylval.id);
+																free(yylval.id);
 																dec->type = TYPE_INT;
 																$$ = create_parent_tree(NULL, NULL, VAR_NODE, dec);	
 															}
@@ -404,7 +412,7 @@ void	cleanup_data(char	*name_file)
 	char	buffer[4096] = {0};
 
 	free_tree(ast);
-	free_symbol_table(global_symbol_table);
+	yylex_destroy();
 	fclose(fileResult);
 	fclose(fileResult_decla);
 	sprintf(buffer, "./%s_decla.dot", name_file);
@@ -417,7 +425,6 @@ void	cleanup_data(char	*name_file)
 		sprintf(buffer, "./%s.dot", name_file);
 		remove(buffer);
 	}
-	fclose(yyin);
 	ast = NULL;
 	global_symbol_table = NULL;
 	is_error = 0;
