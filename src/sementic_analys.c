@@ -10,18 +10,18 @@ FILE *fileResult       = -1;
 void    print_error(char *error, char   *complement)
 {
     if (!complement)
-        printf("compiler: error: %s\n", error);
+        printf("compiler: \033[1;31merror: %s \033[1;0m\n", error);
     else
-        printf("compiler: error: %s %s\n", error, complement);
+        printf("compiler: \033[1;31merror: %s %s\033[1;0m\n", error, complement);
     is_error = 1;
 }
 
 void    print_warning(char *error, char   *complement)
 {
     if (!complement)
-        printf("compiler: warning: %s\n", error);
+        printf("compiler: \033[1;35mwarning: %s\033[1;0m \n", error);
     else
-        printf("compiler: warning: %s %s\n", error, complement);
+        printf("compiler: \033[1;35mwarning: %s %s\033[1;0m\n", error, complement);
     is_error = 1;
 }
 
@@ -179,7 +179,7 @@ int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack)
     return (1);
 }
 
-int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int nb)
+int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int nb, int is_in_switch)
 {
     int type = -1;
     char *id = NULL;
@@ -268,15 +268,19 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
                     print_error("Condition expressions have bad type\n", NULL);
             break; 
         case SWITCH_NODE:
+            is_in_switch = 1;
             // Check if the expression is in good type
             if (get_type_expression(ast->f_a, stack) != TYPE_INT)
                 print_error("Condition expressions have bad type\n", NULL);
             break;
+        case CASE_NODE:
+            if (!is_in_switch)
+                print_error("Case not in switch\n", NULL);
         default:
             break;
     }
-    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_a, stack, actual_nb_node));
-    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_b, stack, actual_nb_node));
+    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_a, stack, actual_nb_node, is_in_switch));
+    link_dot(actual_nb_node, _sementic_analysis_check_rec(ast->f_b, stack, actual_nb_node, is_in_switch));
     if (is_pushed_table)
         pop_stack_symbol_table(&stack);
     return (actual_nb_node);
@@ -291,7 +295,7 @@ int conver_and_sementic_analys(t_tree *ast)
         return (-1);
 
     stack = create_stack_symbol_table(((t_node*)ast->content)->table);
-    res = _sementic_analysis_check_rec(ast->f_b, stack, 0);
+    res = _sementic_analysis_check_rec(ast->f_b, stack, 0, 0);
     free_stack(stack);
     return (res);
 }

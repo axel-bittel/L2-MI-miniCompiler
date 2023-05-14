@@ -67,6 +67,7 @@ struct s_list_dimension;
 //AST
 typedef struct	s_node
 {
+	int		line;
 	char	type;
 	void	*datas;
 	struct s_symbol_table *table;
@@ -141,7 +142,7 @@ int sementic_analysis_check_return(t_tree *ast, t_stack_symbol_table *stack, int
 int get_number_args(t_tree *ast);
 int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack);
 int conver_and_sementic_analys(t_tree *ast);
-int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int actual_node);
+int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int actual_node, int is_in_switch);
 
 // DIMENSION LIST
 t_list_dimension *create_list_dim(int n);

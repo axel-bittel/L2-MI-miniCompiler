@@ -366,8 +366,8 @@ binary_comp :
 
 void yyerror(char *s)
 {
-	printf("compiler: %s, ligne %d\n", s, yylineno);
-	is_error = 1;
+	printf("compiler:\033[1;32m %s: ligne %d\033[1;0m \n", s, yylineno);
+	is_error = 1; 
 }
 
 int	create_files(char	*name_file)
@@ -443,7 +443,7 @@ int main(int argc, char **argv)
 		}
 
 		#ifdef YYDEBUG
-			fprintf(stdout, "\n#compiler: compilation du fichier %s\n", argv[i]);
+			fprintf(stdout, "\n\033[1;33m#compiler: compilation du fichier : \033[1;0m%s\n", argv[i]);
 		#endif
 		yyparse();
 		create_files(argv[i]);
