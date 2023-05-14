@@ -128,14 +128,14 @@ typedef struct s_list_dimension
 }			t_list_dimension;
 
 // AST 
-t_node	*create_new_node(int	type, void	*data);
-t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data);
+t_node	*create_new_node(int	type, void	*data, int line);
+t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data, int line);
 void    free_tree(t_tree    *tree);
 void	print_tree(t_tree	*tree, int i);
 void print_type(int type);
 
 // SEMENTIC ANALYSIS
-void    print_error(char *error, char   *complement);
+void    print_error(char *error, char   *complement, int line);
 int check_tab_dimention(t_symbol_table_elem *elem, t_tree *tree, t_stack_symbol_table *stack);
 int get_type_expression(t_tree  *tree, t_stack_symbol_table *stack);
 int sementic_analysis_check_return(t_tree *ast, t_stack_symbol_table *stack, int type_return);
@@ -176,11 +176,12 @@ int decl_dot(t_tree *tree, int nb);
 int link_dot(int node_1, int node_2);
 
 // Global variables
-extern int 	 nbNode;
-extern char	 is_error;
-extern FILE *fileResult_decla;
-extern FILE *fileResult_link;
-extern FILE *fileResult;
-extern t_tree	*ast;
-extern t_symbol_table	*global_symbol_table;
+extern int 	 nbNode;							// NUMERO DU NOEUD COURANT (durant la traduction du code)
+extern char	 is_error;							// 0 = NO ERROR, 1 = ERROR in program
+extern int yylineno;							// NUMERO LIGNE COURANTE IN FLEX
+extern FILE *fileResult_decla;					// FD POUR LE FICHIER DE RESULTAT DECLARATION
+extern FILE *fileResult_link;					// FD POUR LE FICHIER DE RESULTAT LINK
+extern FILE *fileResult;						// FD POUR LE FICHIER DE RESULTAT
+extern t_tree	*ast;						 	// AT FINAL
+extern t_symbol_table	*global_symbol_table; 	// TABLE DES SYMBOLES GLOBALE
 #endif

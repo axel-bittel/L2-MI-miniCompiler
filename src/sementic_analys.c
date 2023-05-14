@@ -7,21 +7,21 @@ FILE *fileResult_decla = 0;
 FILE *fileResult_link  = 0;
 FILE *fileResult       = -1;
 
-void    print_error(char *error, char   *complement)
+void    print_error(char *error, char   *complement, int line)
 {
     if (!complement)
-        printf("compiler: \033[1;31merror: %s \033[1;0m\n", error);
+        printf("compiler: \033[1;31merror: %s, line %d\033[1;0m\n", error, line);
     else
-        printf("compiler: \033[1;31merror: %s %s\033[1;0m\n", error, complement);
+        printf("compiler: \033[1;31merror: %s %s, line %d\033[1;0m\n", error, complement, line);
     is_error = 1;
 }
 
-void    print_warning(char *error, char   *complement)
+void    print_warning(char *error, char   *complement, int line)
 {
     if (!complement)
-        printf("compiler: \033[1;35mwarning: %s\033[1;0m \n", error);
+        printf("compiler: \033[1;35mwarning: %s, line %d\033[1;0m \n", error, line);
     else
-        printf("compiler: \033[1;35mwarning: %s %s\033[1;0m\n", error, complement);
+        printf("compiler: \033[1;35mwarning: %s %s, line &d\033[1;0m\n", error, complement, line);
     is_error = 1;
 }
 
@@ -31,21 +31,22 @@ int check_tab_dimention(t_symbol_table_elem *elem, t_tree *tree, t_stack_symbol_
     t_tree *tmp = tree->f_b;
 
     if (tree == NULL)
-        return (print_error("Call table without dimensions", NULL), -1);
+        return (-1);
+    int line = ((t_node*)((t_tree*)tmp->f_a)->content)->line; 
     while (tmp)
     {
         if (tmp->f_a && ((t_node*)((t_tree*)tmp->f_a)->content)->type == CONST_NODE)
         {
             if (*(int*)((t_node*)((t_tree*)tmp->f_a)->content)->datas >= dim->dim || \
             *(int*)((t_node*)((t_tree*)tmp->f_a)->content)->datas < 0)
-                return (print_error("Dimension overflow", NULL), -1);
+                return (print_error("Dimension overflow", NULL, line), -1);
         }
         else if (tmp->f_a && get_type_expression(tmp->f_a, stack) != TYPE_INT)
-            return (print_error("Dimension must be a constant", NULL), -1);
+            return (print_error("Dimension must be a constant", NULL, line), -1);
         tmp = tmp->f_b;
         dim = dim->next;
         if ((dim == NULL && tmp != NULL) || (dim != NULL && tmp == NULL))
-            return (print_error("Bad dimension", NULL), -1);
+            return (print_error("Bad dimension", NULL, line), -1);
     }
     return (1);
 }
@@ -181,6 +182,7 @@ int is_args_type_valid(t_tree *ast, t_stack_symbol_table *stack)
 
 int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int nb, int is_in_switch)
 {
+    int line = 0;
     int type = -1;
     char *id = NULL;
     int is_pushed_table = 0;
@@ -203,6 +205,7 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
         && type != IF_DATA_NODE \
         && type != FOR_DATA_NODE)
             actual_nb_node = nbNode;
+        line = ((t_node*)ast->content)->line;
     }
     // Push symbol table if it exist for this type
     if (((t_node *)ast->content)->table)
@@ -218,64 +221,60 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
             stack, ((t_declaration *)((t_node*)ast->content)->datas)->type);
             if (return_error == -1 || 
                 (((t_declaration*)((t_node*)ast->content)->datas)->type == TYPE_INT && return_error == 0))
-                    print_warning("Return has bad type\n", NULL);
+                    print_warning("Return has bad type", NULL, line);
             break;
         case VAR_NODE:
             // Find in symbol table
             if (!(elem = find_element_by_id_stack(stack, id)))
-                print_error("Variable not found :", id);
+                print_error("Variable not found :", id, line);
             // Check if the type and dimensiosn are good
             if (((t_declaration*)((t_node*)ast->content)->datas)->type == TYPE_TAB_INT \
                 && !check_tab_dimention(elem, ast, stack))
-                    print_error("Bad type:", id);
+                    print_error("Bad type:", id, line);
             break;
         case ASSIGN_NODE:
             elem = find_element_by_id_stack(stack, ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name);
 
-            if (!elem)
-            {
-                print_error("Variable not declared in this scope :", ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name);
-                break;
-            }
-            // if the expression is in good type
             if (get_type_expression(ast->f_b, stack) != TYPE_INT)
-                print_error("Assignation expressions have bad type\n", NULL);
-            if (elem->type_identificateur != TYPE_VAR && elem->type_identificateur != TYPE_ARG)
-                print_error("It is not a variable\n", NULL);
+                print_error("Assignation expressions have bad type\n", NULL, line);
+            if (!elem)
+                break;
+            else if (elem->type_identificateur != TYPE_VAR && elem->type_identificateur != TYPE_ARG)
+                print_error("It is not a variable\n", NULL, line);
             break;
         case CALL_NODE:
             // If the function is not declared
             if (!find_element_by_id_stack(stack, id))
             {
-                print_error("Function not exist :", id);
+                print_error("Function not exist :", id, line);
                 break;
             }
             // Bad number of args
             t_symbol_table_elem *fun_elem = find_element_by_id_stack(stack, id);
             if (get_number_args(ast) != fun_elem->nb_args)
-                print_error("Bad number argument for the function \n", NULL);
+                print_error("Bad number argument for the function", NULL, line);
             // Bad type of args
             if (is_args_type_valid(ast->f_b, stack) == -1)
-                print_error("Bad type of argument\n", NULL);
+                print_error("Bad type of argument\n", NULL, line);
             break;
         case IF_NODE:
             // Check if the expression is in good type
             if ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->type == IF_DATA_NODE \
                 && (get_type_expression(((t_tree*)ast->f_a)->f_a, stack) != TYPE_INT))
-                    return (print_error("Condition expressions have bad type\n", NULL), -1);
+                    print_error("Condition expressions have bad type\n", NULL, line);
             else if ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->type != IF_DATA_NODE \
                 && (get_type_expression((t_tree*)ast->f_a, stack) != TYPE_INT))
-                    print_error("Condition expressions have bad type\n", NULL);
+                    print_error("Condition expressions have bad type\n", NULL, line);
             break; 
         case SWITCH_NODE:
             is_in_switch = 1;
             // Check if the expression is in good type
             if (get_type_expression(ast->f_a, stack) != TYPE_INT)
-                print_error("Condition expressions have bad type\n", NULL);
+                print_error("Condition expressions have bad type\n", NULL, line);
             break;
         case CASE_NODE:
             if (!is_in_switch)
-                print_error("Case not in switch\n", NULL);
+                print_error("Case not in switch", NULL, line);
         default:
             break;
     }

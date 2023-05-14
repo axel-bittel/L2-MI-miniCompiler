@@ -2,7 +2,7 @@
 #include "ft_tree.h"
 
 
-t_node	*create_new_node(int	type, void	*data)
+t_node	*create_new_node(int	type, void	*data, int line)
 {
 	t_node	*new_node;
 	
@@ -10,14 +10,15 @@ t_node	*create_new_node(int	type, void	*data)
 	new_node->type = type;
 	new_node->datas = data;
     new_node->table = NULL;
+    new_node->line = line;
 	return (new_node);
 }
 
-t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data)
+t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data, int line)
 {
 	t_tree	*new_tree;
 	
-	new_tree = ft_treenew((void *)create_new_node(type, data));
+	new_tree = ft_treenew((void *)create_new_node(type, data, line));
 	new_tree->f_a = sub_g;
 	new_tree->f_b = sub_d;
 	return (new_tree);
