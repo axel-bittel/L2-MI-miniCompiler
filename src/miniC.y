@@ -445,7 +445,7 @@ int main(int argc, char **argv)
 		}
 
 		#ifdef YYDEBUG
-			fprintf(stdout, "\n\033[1;33m#compiler: compilation du fichier /*  */: \033[1;0m%s\n", argv[i]);
+			fprintf(stdout, "\n\033[1;33m#compiler: compilation du fichier: \033[1;0m%s\n", argv[i]);
 		#endif
 		yyparse();
 		create_files(argv[i]);

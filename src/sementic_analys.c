@@ -39,7 +39,7 @@ int check_tab_dimention(t_symbol_table_elem *elem, t_tree *tree, t_stack_symbol_
         {
             if (*(int*)((t_node*)((t_tree*)tmp->f_a)->content)->datas >= dim->dim || \
             *(int*)((t_node*)((t_tree*)tmp->f_a)->content)->datas < 0)
-                return (print_error("Dimension overflow", NULL, line), -1);
+                return (print_warning("Dimension overflow", NULL, line), -1);
         }
         else if (tmp->f_a && get_type_expression(tmp->f_a, stack) != TYPE_INT)
             return (print_error("Dimension must be a constant", NULL, line), -1);
@@ -228,9 +228,8 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
             if (!(elem = find_element_by_id_stack(stack, id)))
                 print_error("Variable not found :", id, line);
             // Check if the type and dimensiosn are good
-            if (((t_declaration*)((t_node*)ast->content)->datas)->type == TYPE_TAB_INT \
-                && !check_tab_dimention(elem, ast, stack))
-                    print_error("Bad type:", id, line);
+            if (((t_declaration*)((t_node*)ast->content)->datas)->type == TYPE_TAB_INT)
+                check_tab_dimention(elem, ast, stack);
             break;
         case ASSIGN_NODE:
             elem = find_element_by_id_stack(stack, ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name);
