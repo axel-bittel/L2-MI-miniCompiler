@@ -55,7 +55,7 @@ S [ \t\v\n\f]
                             return IDENTIFICATEUR; 
                         }
 
-{D}+[{L}\(\{\[]+        {   yyerror(); }
-{L}+(^[{L}|{D}])+       {   yyerror(); }
+{D}+[{L}\(\{\[]+        {   yyerror("lexical error"); }
+{L}+(^[{L}|{D}])+       {   yyerror("lexical error"); }
 .                       {   yyerror("lexical error"); }
 %%
