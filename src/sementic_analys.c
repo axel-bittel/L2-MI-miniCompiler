@@ -5,7 +5,7 @@ int  nbNode = 1;
 char is_error = 0;
 FILE *fileResult_decla = 0;
 FILE *fileResult_link  = 0;
-FILE *fileResult       = -1;
+FILE *fileResult       = 0;
 
 void    print_error(char *error, char   *complement, int line)
 {
@@ -235,11 +235,11 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
             elem = find_element_by_id_stack(stack, ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->datas)->name);
 
             if (get_type_expression(ast->f_b, stack) != TYPE_INT)
-                print_error("Assignation expressions have bad type\n", NULL, line);
+                print_error("Assignation expressions have bad type", NULL, line);
             if (!elem)
                 break;
             else if (elem->type_identificateur != TYPE_VAR && elem->type_identificateur != TYPE_ARG)
-                print_error("It is not a variable\n", NULL, line);
+                print_error("It is not a variable", NULL, line);
             break;
         case CALL_NODE:
             // If the function is not declared
@@ -254,22 +254,22 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
                 print_error("Bad number argument for the function", NULL, line);
             // Bad type of args
             if (is_args_type_valid(ast->f_b, stack) == -1)
-                print_error("Bad type of argument\n", NULL, line);
+                print_error("Bad type of argument", NULL, line);
             break;
         case IF_NODE:
             // Check if the expression is in good type
-            if ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->type == IF_DATA_NODE \
+            if (((t_node*)((t_tree*)ast->f_a)->content)->type == IF_DATA_NODE \
                 && (get_type_expression(((t_tree*)ast->f_a)->f_a, stack) != TYPE_INT))
-                    print_error("Condition expressions have bad type\n", NULL, line);
-            else if ((t_declaration*)((t_node*)((t_tree*)ast->f_a)->content)->type != IF_DATA_NODE \
+                    print_error("Condition expressions have bad type", NULL, line);
+            else if (((t_node*)((t_tree*)ast->f_a)->content)->type != IF_DATA_NODE \
                 && (get_type_expression((t_tree*)ast->f_a, stack) != TYPE_INT))
-                    print_error("Condition expressions have bad type\n", NULL, line);
+                    print_error("Condition expressions have bad type", NULL, line);
             break; 
         case SWITCH_NODE:
             is_in_switch = 1;
             // Check if the expression is in good type
             if (get_type_expression(ast->f_a, stack) != TYPE_INT)
-                print_error("Condition expressions have bad type\n", NULL, line);
+                print_error("Condition expressions have bad type", NULL, line);
             break;
         case CASE_NODE:
             if (!is_in_switch)

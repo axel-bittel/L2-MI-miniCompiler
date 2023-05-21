@@ -127,6 +127,9 @@ typedef struct s_list_dimension
 	struct s_list_dimension *next;
 }			t_list_dimension;
 
+int yylex();
+void yyerror();
+
 // AST 
 t_node	*create_new_node(int	type, void	*data, int line);
 t_tree	*create_parent_tree(t_tree	*sub_g, t_tree	*sub_d, int type, void	*data, int line);
@@ -169,7 +172,7 @@ t_stack_symbol_table *create_stack_symbol_table(t_symbol_table* table);
 t_stack_symbol_table *push_stack_symbol_table(t_stack_symbol_table **stack, t_stack_symbol_table* new_stack);
 t_stack_symbol_table *pop_stack_symbol_table(t_stack_symbol_table **stack);
 t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char *id);
-t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *id);
+t_stack_symbol_table *find_table_by_id_stack(t_stack_symbol_table *stack, char *id);
 void free_stack(t_stack_symbol_table *stack);
 
 int decl_dot(t_tree *tree, int nb);

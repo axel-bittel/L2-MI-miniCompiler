@@ -378,19 +378,19 @@ int	create_files(char	*name_file)
 	// Create the declaration file
 	sprintf(buffer, "./%s_decla.dot", name_file);
 	fileResult_decla = fopen(buffer, "w+");
-	if (fileResult_decla == -1)
+	if (fileResult_decla == 0)
 		return (0);
 
 	// Create the link file
 	sprintf(buffer, "./%s_link.dot", name_file);
 	fileResult_link = fopen(buffer, "w+");
-	if (fileResult_link == -1)
+	if (fileResult_link ==  0)
 		return (0);
 
 	// Create the final file
 	sprintf(buffer, "./%s.dot", name_file);
 	fileResult = fopen(buffer, "w+");
-	if (fileResult == -1)
+	if (fileResult == 0)
 		return (0);
 }
 

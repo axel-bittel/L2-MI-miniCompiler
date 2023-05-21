@@ -50,7 +50,7 @@ t_symbol_table_elem *find_element_by_id_stack(t_stack_symbol_table *stack, char 
     return (NULL);
 }
 
-t_symbol_table_elem *find_table_by_id_stack(t_stack_symbol_table *stack, char *id)
+t_stack_symbol_table *find_table_by_id_stack(t_stack_symbol_table *stack, char *id)
 {
     t_symbol_table_elem *elem;
 
