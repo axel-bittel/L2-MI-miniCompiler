@@ -32,6 +32,88 @@ Exemple sur la facon de stocker l'ensemble des noeuds des fonctions :<br>
      style="left" /><br>
 Nous avons donc du durant la traduction en DOT ignorer ces noeuds intermédiaires.<br>
 
+## Nos structures de données
+```c
+typedef struct s_tree
+{
+	void			*content;
+	struct s_tree	*f_a;
+	struct s_tree	*f_b;
+}				t_tree;
+```
+Cette structure représente un arbre binaire généraliste. Elle contient un pointeur vers le contenu du nœud (content = ici un t_node), un pointeur vers le fils a (f_a) et un pointeur vers le fils b (f_b). <br>
+```c
+typedef struct	s_node
+{
+	int                      line;
+	char                     type;
+	void                     *datas;
+	struct s_symbol_table    *table;
+}				t_node;
+```
+Cette structure représente un nœud de l'arbre abstrait. Elle enregistre le numéro de ligne (line), le type du nœud (type), des données spécifiques au type de nœud (datas), et un pointeur vers la table des symboles associée (table, si elle existe). <br>
+
+```c
+typedef	struct	s_declaration
+{
+	int       type;
+	char      *name;
+	int       cst;
+}				t_declaration;
+```
+
+Cette structure généraliste représente des informations sur des éléments sytaxiques. Elle enregistre le type de la déclaration (type), le nom de l'identificateur (name), et une valeur constante (cst).<br>
+
+```c
+typedef	struct	s_symbol_table
+{
+	int                      size;
+	char				     type_table;
+	t_symbol_table_elem      *begin;
+	t_symbol_table_elem      *end;
+}				t_symbol_table;
+```
+Cette structure représente une table des symboles. Elle contient un pointeur vers le premier élément de la table (begin) et un pointeur vers le dernier élément (end). Elle enregistre également la taille de la table et le type de la table (Global, fonction ou block). <br>
+
+```c
+typedef	struct	s_symbol_table_elem
+{
+	char                          *name;
+	char                          type_identificateur;
+	char                          type;
+	short                         nb_args;				
+	struct s_list_dimension       *list_dimension;	
+	struct s_symbol_table_elem    *next;
+}				t_symbol_table_elem;
+```
+Cette structure représente un élément de la table des symboles. Elle enregistre le nom de l'identificateur (name), le type d'identificateur (type_identificateur : fonction,variable), le type de l'élément (type : int / void), le nombre d'arguments pour les fonctions (nb_args), une liste des dimensions pour les tableaux (list_dimension), et un pointeur vers le prochain élément de la table des symboles (next). <br>
+```c
+typedef struct stack_symbol_table
+{
+	t_symbol_table                *table;
+	struct stack_symbol_table     *next;
+}				t_stack_symbol_table;
+```
+Cette structure représente une pile de tables des symboles. Elle contient un pointeur vers une t_symbol_table et un pointeur vers la prochaine pile de tables des symboles (next). Elle est utilisé notamment pour l'analyse sémentique. <br>
+
+```c
+typedef struct s_list_dimension
+{
+	int                      dim;
+	struct s_list_dimension  *next;
+}			t_list_dimension;
+```
+Cette structure représente une liste chaînée de dimensions. Elle enregistre une dimension (dim) et un pointeur vers la prochaine dimension (next). Elle est utilisée pour représenter les dimenssions des tableaux multidimensionnels. <br>
+
+## Passes
+Notre compilateur est un compilateur en deux passes. <br><br>
+
+1) Notre première passe a pour but, dans un premier temps de réaliser le parsing du code miniC. L'analyse lexicale vérifie l'appartenance des chaines de caractères du code au langage et renvoie des tokens. L'analyse syntaxique utilise ces tokens pour déterminer la structure grammaticale du code miniC et génère notre arbre abstrait. Lors de notre première passe, nous créons et enrichissons également notre table des symboles.<br>
+
+2) Notre seconde passe a pour but de lancer l'analyse sémantique mais également de traduire notre arbre abstrait en arbre dot. L'analyse sémantique vérifie la validité sémantique de notre code miniC. Cela implique entre autre la vérification des types, des identificateurs, la détection des erreurs et des incohérences potentielles dans le code. Lors de la seconde passe, un code à l'origine d'un graphe au format .dot est également généré. Ce graphe représente le code source miniC de manière graphique. <br>
+
+## Nos difficultés
+
 Dans un premier temps, nous avons commis une erreur dans la création de l'arbre abstrait. En effet, à cause d'une mauvaise lecture du sujet, nous avons commencé par construire un arbre syntaxique complet. Cependant, après une relecture complète et conjointe du sujet, nous avons rapidement pu rectifier notre arbre grâce à des modifications mineures dans la création de ce dernier. Cette expérience nous a rappelé l'importance de l'adaptabilité et de la bonne définition des attentes dans la résolution des problèmes.
 
 ## Notre exprérience
