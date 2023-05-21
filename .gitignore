@@ -2,3 +2,4 @@
 src/*.o
 ./y.tab.c
 ./lex.yy.c
+Rapport/rapport.pdf

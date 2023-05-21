@@ -1,4 +1,6 @@
 CC				=		gcc
+YACC			=		bison
+LEX				=		lex
 RM				=		rm -f
 UNAME_S			:=		$(shell uname -s)
 
@@ -38,9 +40,9 @@ ${NAME}			:	lexer parser ${OPARSER_GEN_FILE} ${OBJS}
 all			:	${NAME} 
 
 lexer		:	
-				lex ${LEXER_FILE}
+				${LEX} ${LEXER_FILE}
 parser		:	
-				bison ${PARSER_FILE} -b "miniC"
+				${YACC} ${PARSER_FILE} -b "miniC"
 				${CC} -c ${CFLAGS} ${FSFLAGS} ${HEADER} -o ./y.tab.o ./miniC.tab.c -g
 
 clean :
