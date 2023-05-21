@@ -274,6 +274,26 @@ int _sementic_analysis_check_rec(t_tree *ast, t_stack_symbol_table  *stack, int 
         case CASE_NODE:
             if (!is_in_switch)
                 print_error("Case not in switch", NULL, line);
+            break;
+        case BOOL_AND_NODE:
+        case BOOL_OR_NODE:
+        case BOOL_EQ_NODE:
+        case BOOL_GE_NODE:
+        case BOOL_G_NODE:
+        case BOOL_L_NODE:
+        case BOOL_LE_NODE:
+        case BOOL_NEQ_NODE:
+        case ADD_NODE:
+        case MINUS_NODE:
+        case MULT_NODE:
+        case DIV_NODE:
+        case LSHIFT_NODE:
+        case RSHIFT_NODE:
+        case BAND_NODE:
+        case BOR_NODE:
+            if (get_type_expression(ast, stack) != TYPE_INT)
+                print_error("Expressions have bad type", NULL, line);
+            break;
         default:
             break;
     }

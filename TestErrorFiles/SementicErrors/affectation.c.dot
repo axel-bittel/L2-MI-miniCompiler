@@ -1,0 +1,25 @@
+digraph mon_programme {
+	node_4 [label="fun, int" shape=invtrapezium color=blue];
+	node_5 [label="RETURN" shape=trapezium color=blue];
+	node_6 [shape=ellipse label="2"];
+	node_7 [label="main, int" shape=invtrapezium color=blue];
+	node_8 [label=":=" shape=ellipse];
+	node_9 [shape=ellipse label="tab2"];
+	node_10 [label="fun" shape=septagon];
+	node_11 [label=":=" shape=ellipse];
+	node_12 [shape=ellipse label="a"];
+	node_13 [shape=ellipse label="tab2"];
+	node_14 [label="RETURN" shape=trapezium color=blue];
+	node_15 [shape=ellipse label="0"];
+	node_5 ->  node_6;
+	node_4 ->  node_5;
+	node_8 ->  node_9;
+	node_8 ->  node_10;
+	node_7 ->  node_8;
+	node_11 ->  node_12;
+	node_11 ->  node_13;
+	node_7 ->  node_11;
+	node_14 ->  node_15;
+	node_7 ->  node_14;
+
+}

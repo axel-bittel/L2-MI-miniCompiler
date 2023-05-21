@@ -190,6 +190,7 @@ instruction :
 	|	affectation ';'										{	$$ = $1;	}
 	|	bloc												{	$$ = $1;	}
 	|	appel ';'											{	$$ = $1;	}
+	|	expression ';'										{	$$ = $1;	}
 ;
 
 iteration :	
@@ -209,6 +210,7 @@ case_instruction :
 	|	saut												{	$$ = $1;	}
 	|	affectation ';'										{	$$ = $1;	}
 	|	appel ';'											{	$$ = $1;	}
+	|	expression ';'										{	$$ = $1;	}
 ;
 
 case_selection :

@@ -84,7 +84,7 @@ int symbol_list_fonction_rec (t_tree *tree, t_symbol_table *table)
         // Check double declarations
         if (find_element_by_id(((t_declaration*)tmp->datas)->name, table))
             return (print_error("Double fonction definition : ",((t_declaration*)tmp->datas)->name, tmp->line), -1);
-        t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, tmp->type, TYPE_FUNCTION, ((t_declaration*)tmp->datas)->cst, 0);
+        t_symbol_table_elem *new_elem = create_symbol_table_element(((t_declaration*)tmp->datas)->name, ((t_declaration*)tmp->datas)->type, TYPE_FUNCTION, ((t_declaration*)tmp->datas)->cst, 0);
         add_element_in_symbol_table(table, new_elem);
         return (0);
     }
