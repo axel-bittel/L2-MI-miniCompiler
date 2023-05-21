@@ -21,7 +21,7 @@ void    print_warning(char *error, char   *complement, int line)
     if (!complement)
         printf("compiler: \033[1;35mwarning: %s, line %d\033[1;0m \n", error, line);
     else
-        printf("compiler: \033[1;35mwarning: %s %s, line &d\033[1;0m\n", error, complement, line);
+        printf("compiler: \033[1;35mwarning: %s %s, line %d\033[1;0m\n", error, complement, line);
     is_error = 1;
 }
 
