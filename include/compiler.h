@@ -89,7 +89,7 @@ typedef	struct	s_symbol_table_elem
 	char	*name;
 	char	type_identificateur;
 	char	type;
-	short 	nb_args;				// POUR LES FONCTIONS + EXTERN FONCTIONS
+	short 	nb_args;								// POUR LES FONCTIONS + EXTERN FONCTIONS
 	struct s_list_dimension		*list_dimension;	// POUR LES TABLEAUX
 	struct s_symbol_table_elem	*next;
 }				t_symbol_table_elem;
