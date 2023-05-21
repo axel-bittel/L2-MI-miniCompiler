@@ -11,7 +11,6 @@
 
 #define COND_NODE                0   //NODE FOR BEGIN CONDITION
 #define IF_NODE                  1   //NODE FOR IF
-#define ELSEIF_NODE              2   //NODE FOR ELSE IF
 #define ELSE_NODE                3   //NODE FOR ELSE
 #define RETURN_NODE              4   //NODE FOR RETURN OF FUNCTION
 #define CALL_NODE                5   //NODE CALL FUNCTION

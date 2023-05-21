@@ -109,9 +109,6 @@ void print_type(int type)
         case IF_NODE:
             printf("IF_NODE");
             break;
-        case ELSEIF_NODE:
-            printf("ELSEIF_NODE");
-            break;
         case ELSE_NODE:
             printf("ELSE_NODE");
             break;
